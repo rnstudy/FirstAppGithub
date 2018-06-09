@@ -7,7 +7,7 @@
 import React, { Component } from 'react';
 import TabNavigator from 'react-native-tab-navigator';
 import {Navigator} from 'react-native-deprecated-custom-components';
-import Boy from './pages/boy'
+import Boy from './src/boy'
 import {
   Platform,
   StyleSheet,
