@@ -6,6 +6,8 @@
 
 import React, { Component } from 'react';
 import TabNavigator from 'react-native-tab-navigator';
+import {Navigator} from 'react-native-deprecated-custom-components';
+import Boy from './src/boy'
 import {
   Platform,
   StyleSheet,
@@ -35,46 +37,15 @@ export default class App extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
-         <TabNavigator>
-            <TabNavigator.Item
-              selected={this.state.selectedTab === 'tb_popular'}
-              selectedTitleStyle={{color:'red'}}
-              title="最热"
-              renderIcon={() => <Image style={styles.imgae} source={require('./res/img/cart.png')} />}
-              renderSelectedIcon={() => <Image style={[styles.imgae,{tintColor:'red'}]} source={require('./res/img/cart.png')} />}
-              badgeText="2"
-              onPress={() => this.setState({ selectedTab: 'tb_popular' })}>
-              <View style={styles.page1}></View>
-            </TabNavigator.Item>
-            <TabNavigator.Item
-              selected={this.state.selectedTab === 'tb_trending'}
-               selectedTitleStyle={{color:'red'}}
-              title="趋势"
-              renderIcon={() => <Image style={styles.imgae} source={require('./res/img/store.png')} />}
-              renderSelectedIcon={() => <Image style={[styles.imgae,{tintColor:'red'}]}  source={require('./res/img/store.png')} />}
-              onPress={() => this.setState({ selectedTab: 'tb_trending' })}>
-             <View style={styles.page2}></View>
-              </TabNavigator.Item>
-              <TabNavigator.Item
-                  selected={this.state.selectedTab === 'tb_favor'}
-                  selectedTitleStyle={{color:'red'}}
-                  title="收藏"
-                  renderIcon={() => <Image style={styles.imgae} source={require('./res/img/sale.png')} />}
-                  renderSelectedIcon={() => <Image style={[styles.imgae,{tintColor:'red'}]} source={require('./res/img/sale.png')} />}
-                  badgeText="1"
-                  onPress={() => this.setState({ selectedTab: 'tb_favor' })}>
-                  <View style={styles.page1}></View>
-            </TabNavigator.Item>
-            <TabNavigator.Item
-                  selected={this.state.selectedTab === 'tb_my'}
-                   selectedTitleStyle={{color:'red'}}
-                  title="我的"
-                  renderIcon={() => <Image style={styles.imgae} source={require('./res/img/person.png')} />}
-                  renderSelectedIcon={() => <Image style={[styles.imgae,{tintColor:'red'}]}  source={require('./res/img/person.png')} />}
-                  onPress={() => this.setState({ selectedTab: 'tb_my' })}>
-                 <View style={styles.page2}></View>
-              </TabNavigator.Item>
-        </TabNavigator>
+        <Navigator 
+        initialRoute={{
+          component:Boy
+        }}
+        renderScene={(route,navigator)=>{
+            let Component = route.component;
+            return <Component navigator={navigator} {...route.params} />
+        }}
+        ></Navigator>
       </View>
     );
   }
