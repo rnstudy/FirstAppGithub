@@ -8,12 +8,14 @@ import React, { Component } from 'react';
 import TabNavigator from 'react-native-tab-navigator';
 import {Navigator} from 'react-native-deprecated-custom-components';
 import Boy from './pages/boy'
+import ListViewTest from './component/ListViewTest'
 import {
   Platform,
   StyleSheet,
   Image,
   Text,
-  View
+  View,
+  ListView,
 } from 'react-native';
 
 const instructions = Platform.select({
@@ -37,6 +39,7 @@ export default class App extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
+      {/**
         <Navigator 
         initialRoute={{
           component:Boy
@@ -45,7 +48,8 @@ export default class App extends Component<Props> {
             let Component = route.component;
             return <Component navigator={navigator} {...route.params} />
         }}
-        ></Navigator>
+        ></Navigator> **/}
+      <ListViewTest/>
       </View>
     );
   }
