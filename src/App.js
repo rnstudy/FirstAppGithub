@@ -9,6 +9,7 @@ import TabNavigator from 'react-native-tab-navigator';
 import {Navigator} from 'react-native-deprecated-custom-components';
 import Boy from './pages/boy'
 import ListViewTest from './component/ListViewTest'
+import FetchTest from './pages/FetchTest'
 import {
   Platform,
   StyleSheet,
@@ -49,7 +50,8 @@ export default class App extends Component<Props> {
             return <Component navigator={navigator} {...route.params} />
         }}
         ></Navigator> **/}
-      <ListViewTest/>
+      {/**<ListViewTest/>**/}
+      <FetchTest />
       </View>
     );
   }
