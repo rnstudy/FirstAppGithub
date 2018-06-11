@@ -36,6 +36,10 @@ export default class PopularPage extends Component {
                 <PopularTab tabLabel="IOS">IOS</PopularTab>
                 <PopularTab tabLabel="Android">Android</PopularTab>
                 <PopularTab tabLabel="Javascript">Javascript</PopularTab>
+                <PopularTab tabLabel="Go">Go</PopularTab>
+                <PopularTab tabLabel="Php">Php</PopularTab>
+                <PopularTab tabLabel="Mysql">Mysql</PopularTab>
+                <PopularTab tabLabel="Cache">Cache</PopularTab>
             </ScrollableTabView>
         </View>
     }
