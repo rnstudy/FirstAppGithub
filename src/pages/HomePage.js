@@ -17,7 +17,7 @@ import {
 
 import PopularPage from './PopularPage'
 
-export default class HomePage extends Component<Props> {
+export default class HomePage extends Component{
   constructor(props){
     super(props);
     this.state = {
