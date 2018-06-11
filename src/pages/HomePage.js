@@ -14,6 +14,9 @@ import {
   View,
   ListView,
 } from 'react-native';
+
+import PopularPage from './PopularPage'
+
 export default class HomePage extends Component<Props> {
   constructor(props){
     super(props);
@@ -34,7 +37,7 @@ export default class HomePage extends Component<Props> {
               renderIcon={() => <Image style={styles.imgae} source={require('./../../res/img/cart.png')} />}
               renderSelectedIcon={() => <Image style={[styles.imgae,{tintColor:'red'}]} source={require('./../../res/img/cart.png')} />}
               onPress={() => this.setState({ selectedTab: 'tb_popular' })}>
-              <View style={styles.page1}></View>
+             <PopularPage />
             </TabNavigator.Item>
             <TabNavigator.Item
               selected={this.state.selectedTab === 'tb_trending'}

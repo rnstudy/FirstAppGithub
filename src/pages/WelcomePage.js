@@ -4,8 +4,7 @@ import {
   StyleSheet,
   Image,
   Text,
-  View,
-  Navigator
+  View
 } from 'react-native';
 
 import NavigationBar from './../component/NavigationBar'
