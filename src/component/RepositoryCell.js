@@ -57,5 +57,14 @@ const styles = StyleSheet.create({
         marginRight:5,
         marginVertical:3,
         borderWidth:.5,
+        borderColor:'#999',
+        shadowColor:'gray',
+        shadowOffset:{
+            width:0.5,
+            height:0.5
+        },
+        shadowOpacity:0.4,
+        shadowRadius:1,
+        elevation:2,
     }
 });
