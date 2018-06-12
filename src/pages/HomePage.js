@@ -17,6 +17,7 @@ import {
 
 import PopularPage from './PopularPage'
 import AsyncStorageTest from './AsyncStorageTest'
+import MyPage from './MyPage'
 
 export default class HomePage extends Component{
   constructor(props){
@@ -65,7 +66,7 @@ export default class HomePage extends Component{
                   renderIcon={() => <Image style={styles.imgae} source={require('./../../res/img/person.png')} />}
                   renderSelectedIcon={() => <Image style={[styles.imgae,{tintColor:'#2196f3'}]}  source={require('./../../res/img/person.png')} />}
                   onPress={() => this.setState({ selectedTab: 'tb_my' })}>
-                 <View style={styles.page2}></View>
+                  <MyPage {...this.props}/>
               </TabNavigator.Item>
         </TabNavigator>
       </View>
