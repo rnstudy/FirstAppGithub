@@ -19,6 +19,7 @@ export default class CustomKeyPage extends Component {
         super(props);
         this.languageDao = new LanguageDao(FLAG_LANGUAGE.flag_key)
         this.changeValues = []
+        this.isRemoveKey = this.props.isRemoveKey ? true:false;
         this.state = {
             dataArray: []
         }
@@ -57,10 +58,21 @@ export default class CustomKeyPage extends Component {
     }
 
     onSave() {
-        console.log(this.state.dataArray);
         if (this.changeValues.length === 0) {
             this.props.navigator.pop();
             return;
+        }
+        this.languageDao.save(this.state.dataArray);
+        this.props.navigator.pop();
+    }
+
+    onRemove() {
+        if (this.changeValues.length === 0) {
+            this.props.navigator.pop();
+            return;
+        }
+        for(let i=0,l=this.changeValues.length;i<l;i++){
+            ArrayUtil.remove(this.state.dataArray,this.changeValues[i]);
         }
         this.languageDao.save(this.state.dataArray);
         this.props.navigator.pop();
@@ -111,21 +123,29 @@ export default class CustomKeyPage extends Component {
                 <View style={styles.line}></View>
             </View>)
         return views;
-        //return <Text style={{height:400,width:400}} >{JSON.stringify(this.state.dataArray)}</Text>
     }
 
     render() {
-        let rightButton = <TouchableOpacity
+        let title = this.isRemoveKey ? '标签移除':'自定义标签';
+        let ringhtButtonTitle = this.isRemoveKey ? '移除':'保存';
+
+        let rightButton = this.isRemoveKey? <TouchableOpacity
+            onPress={() => this.onRemove()}
+        >
+            <View style={{margin: 10}}>
+                <Text style={styles.title}>{ringhtButtonTitle}</Text>
+            </View>
+        </TouchableOpacity>:<TouchableOpacity
             onPress={() => this.onSave()}
         >
             <View style={{margin: 10}}>
-                <Text style={styles.title}>保存</Text>
+                <Text style={styles.title}>{ringhtButtonTitle}</Text>
             </View>
         </TouchableOpacity>
         return (
             <View style={styles.container}>
                 <NavigationBar
-                    title={'自定义标签'}
+                    title={title}
                     style={{backgroundColor: '#2196f3'}}
                     leftButton={ViewUtil.getLeftButton(() => this.onBack())}
                     rightButton={rightButton}
