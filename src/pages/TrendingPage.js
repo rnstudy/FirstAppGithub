@@ -1,32 +1,32 @@
 import React, { Component } from 'react';
 import {
-    Platform,
     StyleSheet,
-    Image,
     TextInput,
     Text,
     View
 } from 'react-native';
 
 import NavigationBar from './../component/NavigationBar'
-import GitHubTrending from 'GitHubTrending'
 import DataRepository,{FLAG_STORAGE} from './../expand/dao/DataRepository'
 const URL='https://github.com/trending/'
 
-export default class TrendingTest extends Component{
+export default class TrendingPage extends Component{
 
     constructor(props){
         super(props);
-        this.trending = new GitHubTrending();
+        this.dataRepository = new DataRepository(FLAG_STORAGE.flag_trending);
         this.state = {
             result:'',
         }
 
     }
 
-    onLoad(){
-        let url = URL+this.text;
-        this.trending.fetchTrending(url)
+    onClick(){
+        this.loadData(URL+this.text);
+    }
+
+    loadData(url){
+        this.dataRepository.fetchRepository(url)
             .then(result=>{
                 this.setState({
                     result:JSON.stringify(result),
@@ -43,7 +43,7 @@ export default class TrendingTest extends Component{
     render(){
         return <View>
             <NavigationBar
-                title={'GithubTrending的使用'}
+                title={'TrendingPage'}
             />
             <TextInput
                 style={{height:30,borderWidth:1}}
@@ -53,7 +53,7 @@ export default class TrendingTest extends Component{
             />
             <View style={{flexDirection:'row'}}>
                 <Text style={styles.tips}
-                      onPress={()=>this.onLoad()}
+                      onPress={()=>this.onClick()}
                 >加载数据</Text>
                 <Text style={{flex:1}}>{this.state.result}</Text>
             </View>
