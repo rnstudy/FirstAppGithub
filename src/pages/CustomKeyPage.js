@@ -72,8 +72,6 @@ export default class CustomKeyPage extends Component {
     }
 
     renderCheckBox(data) {
-        console.log('data');
-        console.log(data);
         let leftText = data.name
         return (<Checkbox
             style={{flex: 1, padding: 10}}
@@ -150,7 +148,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
     },
     title: {
-        fontSize: 20,
+        fontSize: 16,
         color: '#fff'
     },
     line: {
