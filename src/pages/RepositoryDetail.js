@@ -11,13 +11,12 @@ import {
 } from 'react-native';
 import ViewUtil from '../util/ViewUtil'
 import NavigationBar from './../component/NavigationBar'
-const URL = 'http://www.imooc.com'
-
+const TRENDING_URL = 'http://github.com/'
 export default class RepositoryDetail extends Component {
     constructor(props) {
         super(props);
-        this.url= this.props.item.html_url;
-        let title = this.props.item.full_name;
+        this.url= this.props.item.html_url ? this.props.item.html_url : TRENDING_URL+this.props.item.fullName;
+        let title = this.props.item.full_name ? this.props.item.full_name : this.props.item.fullName;
         this.state = {
             url:this.url,
             title:title,
