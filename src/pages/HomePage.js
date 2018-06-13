@@ -17,6 +17,7 @@ import PopularPage from './PopularPage'
 import AsyncStorageTest from './AsyncStorageTest'
 import MyPage from './MyPage'
 import Toast,{DURATION} from 'react-native-easy-toast';
+import WebViewTest from './WebViewTest'
 
 export default class HomePage extends Component {
     constructor(props) {
@@ -68,7 +69,7 @@ export default class HomePage extends Component {
                         renderSelectedIcon={() => <Image style={[styles.imgae, {tintColor: '#2196f3'}]}
                                                          source={require('./../../res/img/sale.png')}/>}
                         onPress={() => this.setState({selectedTab: 'tb_favor'})}>
-                        <View style={styles.page1}></View>
+                       <WebViewTest/>
                     </TabNavigator.Item>
                     <TabNavigator.Item
                         selected={this.state.selectedTab === 'tb_my'}
