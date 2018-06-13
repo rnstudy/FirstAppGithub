@@ -83,6 +83,10 @@ export default class WebViewTest extends Component {
                    ref={webView=>this.webView = webView }
                     source={{uri:this.state.url}}
                     onNavigationStateChange={(e)=>this.onNavigationStateChange(e)}
+                    nativeConfig={{props:{
+                            backgroundColor:'#fff',
+                            flex:1
+                        }}}
                />
             </View>
         )
