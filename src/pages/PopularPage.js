@@ -7,7 +7,8 @@ import {
     View,
     TextInput,
     ListView,
-    RefreshControl
+    RefreshControl,
+    DeviceEventEmitter
 } from 'react-native';
 
 import ScrollableTabView, {ScrollableTabBar} from 'react-native-scrollable-tab-view'
@@ -21,7 +22,7 @@ const QUERY_STR = '&sort=stars'
 export default class PopularPage extends Component {
     constructor(props) {
         super(props);
-        this.languageDao=new LanguageDao(FLAG_LANGUAGE.flag_key);
+        this.languageDao = new LanguageDao(FLAG_LANGUAGE.flag_key);
         this.state = {
             languages: []
         }
@@ -44,17 +45,17 @@ export default class PopularPage extends Component {
     }
 
     render() {
-        let content = this.state.languages.length > 0?<ScrollableTabView
+        let content = this.state.languages.length > 0 ? <ScrollableTabView
             tabBarBackgroundColor="#2196f3"
             tabBarInactiveTextColor="mintcream"
             tabBarActiveTextColor="#fff"
             tabBarUnderlineStyle={{backgroundColor: '#efefef', height: 2}}
             renderTabBar={() => <ScrollableTabBar/>}>
-            {this.state.languages.map((result,i,arr)=>{
-                let lan=arr[i];
-                return lan.checked ?  <PopularTab key={i} tabLabel={lan.name}>{lan.name}</PopularTab>:null
+            {this.state.languages.map((result, i, arr) => {
+                let lan = arr[i];
+                return lan.checked ? <PopularTab key={i} tabLabel={lan.name}>{lan.name}</PopularTab> : null
             })}
-        </ScrollableTabView>:null;
+        </ScrollableTabView> : null;
         return <View style={styles.container}>
             <NavigationBar
                 title={'最热'}
@@ -89,12 +90,27 @@ class PopularTab extends Component {
             isLoading: true
         })
         let url = URL + this.props.tabLabel + QUERY_STR;
-        this.dataRepository.fetchNetRepository(url)
+        this.dataRepository.fetchRepository(url)
             .then(result => {
+                let items = result && result.items ? result.items : result ? result : [];
                 this.setState({
-                    dataSource: this.state.dataSource.cloneWithRows(result.items),
+                    dataSource: this.state.dataSource.cloneWithRows(items),
+                    isLoading: false
+                });
+                if (result && result.update_date && !this.dataRepository.checkData(result.update_date)){
+                    DeviceEventEmitter.emit('showToast','数据过时')
+                    return this.dataRepository.fetchNetRepository(url);
+                }else{
+                    DeviceEventEmitter.emit('showToast','显示缓存数据')
+                }
+                    })
+            .then(items=>{
+                if(!items || items.length ===0) return;
+                this.setState({
+                    dataSource: this.state.dataSource.cloneWithRows(items),
                     isLoading: false
                 })
+                DeviceEventEmitter.emit('showToast','显示网络数据')
             })
             .catch(error => {
                 this.setState({
