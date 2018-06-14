@@ -46,19 +46,10 @@ export default class SortKeyPage extends Component {
     }
 
     componentDidMount() {
-        this.languageDao = new LanguageDao(FLAG_LANGUAGE.flag_key)
+        this.languageDao = new LanguageDao(this.props.flag)
         this.loadData();
     }
 
-    componentWillUnmount() {
-        this.languageDao = null;
-        this.dataArray = []; //数据库读取所有数组
-        this.sortResultArray = []; //订阅排序数组
-        this.orignalCheckedArray = []; //已订阅原始数组
-        this.setState({
-            checkedArray: [],
-        })
-    }
 
     loadData() {
         this.languageDao.fetch()
@@ -92,8 +83,8 @@ export default class SortKeyPage extends Component {
                 '提示',
                 '是否保存修改？',
                 [
-                    {text: '不保存', onPress: () => this.props.navigator.pop(), style: 'cancel'},
-                    {text: '保存', onPress: () => this.onSave()},
+                    {text: '否', onPress: () => this.props.navigator.pop(), style: 'cancel'},
+                    {text: '是', onPress: () => this.onSave()},
                 ],
             )
         }
@@ -120,6 +111,7 @@ export default class SortKeyPage extends Component {
 
 
     render() {
+        let title = this.props.flag === FLAG_LANGUAGE.flag_language ? '语言排序':'标签排序';
         let rightButton = <TouchableOpacity
             onPress={() => this.onSave()}
         >
@@ -127,6 +119,12 @@ export default class SortKeyPage extends Component {
                 <Text style={styles.title}>保存</Text>
             </View>
         </TouchableOpacity>
+        let navigationBar =  <NavigationBar
+            title={title}
+            style={{backgroundColor: '#2196f3'}}
+            leftButton={ViewUtil.getLeftButton(()=>this.onBack())}
+            rightButton={rightButton}
+        />
         let order = Object.keys(this.state.checkedArray)
         let data = this.state.checkedArray;
         let content = data.length > 0 ?     <SortableListView
@@ -142,12 +140,7 @@ export default class SortKeyPage extends Component {
 
         return (
             <View style={styles.container}>
-                <NavigationBar
-                    title={'SortKeyPage'}
-                    style={{backgroundColor: '#2196f3'}}
-                    leftButton={ViewUtil.getLeftButton(()=>this.onBack())}
-                    rightButton={rightButton}
-                />
+                {navigationBar}
                 {content}
             </View>
         )

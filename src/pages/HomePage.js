@@ -52,9 +52,9 @@ export default class HomePage extends Component {
         return (
             <View style={styles.container}>
                 <TabNavigator>
-                    {this._renderTab(PopularPage,'tb_popular','最热',require('./../../res/img/cart.png'))}
-                    {this._renderTab(TrendingPage,'tb_trending','趋势',require('./../../res/img/store.png'))}
-                    {this._renderTab(WebViewTest,'tb_favor','收藏',require('./../../res/img/sale.png'))}
+                    {this._renderTab(PopularPage,'tb_popular','最热',require('./../../res/img/hot.png'))}
+                    {this._renderTab(TrendingPage,'tb_trending','趋势',require('./../../res/img/trending.png'))}
+                    {this._renderTab(WebViewTest,'tb_favor','收藏',require('./../../res/img/favi.png'))}
                     {this._renderTab(MyPage,'tb_my','我的',require('./../../res/img/person.png'))}
                 </TabNavigator>
                 <Toast ref={toast=>this.toast = toast}/>
