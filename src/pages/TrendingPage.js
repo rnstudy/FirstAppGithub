@@ -8,28 +8,51 @@ import {
     TextInput,
     ListView,
     RefreshControl,
+    TouchableOpacity,
+    TouchableHighlight,
     DeviceEventEmitter
 } from 'react-native';
 
 import ScrollableTabView, {ScrollableTabBar} from 'react-native-scrollable-tab-view'
 import NavigationBar from './../component/NavigationBar'
-import DataRepository,{FLAG_STORAGE} from './../expand/dao/DataRepository'
+import DataRepository, {FLAG_STORAGE} from './../expand/dao/DataRepository'
 import TrendingCell from './../component/TrendingCell'
 import LanguageDao, {FLAG_LANGUAGE} from '../expand/dao/LanguageDao'
-import RepositoryDetail from'./RepositoryDetail'
+import RepositoryDetail from './RepositoryDetail'
 
 const API_URL = 'https://github.com/trending/'
+import TimeSpan from '../model/TimeSpan'
+import Popover from '../component/Popover'
+import ModalDropdown from 'react-native-modal-dropdown';
+
+
+var timeSpanTextArray = [
+    new TimeSpan('今天', 'since=daily'),
+    new TimeSpan('本周', 'since=weekly'),
+    new TimeSpan('本月', 'since=monthly')
+];
+
 export default class TrendingPage extends Component {
     constructor(props) {
         super(props);
         this.languageDao = new LanguageDao(FLAG_LANGUAGE.flag_language);
         this.state = {
-            languages: []
+            languages: [],
+            isVisible:false,
+            buttonRect:{},
+            timeSpan:timeSpanTextArray[0],
         }
     }
 
     componentDidMount() {
         this.load()
+    }
+
+    onSelectTitle(index,value){
+        //DeviceEventEmitter.emit('showToast', '选择是：'+value.showText +'值是:'+value.searchText);
+        this.setState({
+            timeSpan:value
+        })
     }
 
     load() {
@@ -44,6 +67,47 @@ export default class TrendingPage extends Component {
             })
     }
 
+    //加载按钮
+    _dropdown_2_renderButtonText(rowData) {
+        const {showText, searchText} = rowData;
+        return `${showText}`;
+    }
+
+    //加载下拉框内容
+    _dropdown_2_renderRow(rowData, rowID, highlighted) {
+        let evenRow = rowID % 2;
+        return (
+            <TouchableHighlight underlayColor='#rgba(0,0,0,.5)'>
+                <View style={[styles.dropdown_2_row, {backgroundColor: evenRow ? 'rgba(0,0,0,.5)' : 'rgba(0,0,0,.5)'}]}>
+                    <Text style={[styles.dropdown_2_row_text, highlighted && {color: '#fff'}]}>
+                        {`${rowData.showText}`}
+                    </Text>
+                </View>
+            </TouchableHighlight>
+        );
+    }
+
+    renderModelTitleView (){
+        return <View style={{backgroundColor:'#2196f3'}}>
+        <ModalDropdown ref="dropdown_2"
+                       style={styles.dropdown_2}
+                       textStyle={styles.dropdown_2_text}
+                       dropdownStyle={styles.dropdown_2_dropdown}
+                       options={timeSpanTextArray}
+                       renderButtonText={(rowData) => this._dropdown_2_renderButtonText(rowData)}
+                       defaultValue="趋势"
+                       renderRow={this._dropdown_2_renderRow.bind(this)}
+                       onSelect={(index,value)=>this.onSelectTitle(index,value)}
+        />
+            <TouchableOpacity onPress={() => {
+                this.refs.dropdown_2.select(0);
+            }}>
+                <Text style={styles.textButton}>
+                    select Rex
+                </Text>
+            </TouchableOpacity>
+        </View>
+    }
     render() {
         let content = this.state.languages.length > 0 ? <ScrollableTabView
             tabBarBackgroundColor="#2196f3"
@@ -53,15 +117,17 @@ export default class TrendingPage extends Component {
             renderTabBar={() => <ScrollableTabBar/>}>
             {this.state.languages.map((result, i, arr) => {
                 let lan = arr[i];
-                return lan.checked ? <TrendingTab key={i} tabLabel={lan.name} {...this.props}>{lan.name}</TrendingTab> : null
+                return lan.checked ?
+                    <TrendingTab key={i} tabLabel={lan.name} timeSpan={this.state.timeSpan} {...this.props}>{lan.name}</TrendingTab> : null
             })}
         </ScrollableTabView> : null;
+
         return <View style={styles.container}>
             <NavigationBar
-                title={'趋势'}
+                titleView={this.renderModelTitleView()}
                 style={{backgroundColor: '#2196f3'}}
                 statusBar={{
-                    backgroundColor: '#2196f3'
+                    backgroundColor: '#2196f3',
                 }}
             />
             {content}
@@ -82,61 +148,77 @@ class TrendingTab extends Component {
     }
 
     componentDidMount() {
-       this.loadData()
+        this.loadData(this.props.timeSpan,true)
     }
 
-    loadData() {
-        this.setState({
+    componentWillReceiveProps(nextProps){
+        if(nextProps.timeSpan !== this.props.timeSpan){
+            console.log(nextProps.timeSpan);
+            this.loadData(nextProps.timeSpan)
+        }
+    }
+
+    onRefresh(){
+        this.loadData(this.props.timeSpan);
+    }
+
+    loadData(timeSpan,isRefresh) {
+        this.updateState({
             isLoading: true
         })
-        let url = this.getFetchUrl('?since=daily',this.props.tabLabel)
+        let url = this.getFetchUrl(timeSpan, this.props.tabLabel)
         console.log(url);
         this.dataRepository.fetchRepository(url)
             .then(result => {
                 let items = result && result.items ? result.items : result ? result : [];
-                this.setState({
+                this.updateState({
                     dataSource: this.state.dataSource.cloneWithRows(items),
                     isLoading: false
                 });
-                if (result && result.update_date && !this.dataRepository.checkData(result.update_date)){
-                    DeviceEventEmitter.emit('showToast','数据过时')
+                if (result && result.update_date && !this.dataRepository.checkData(result.update_date)) {
+                    DeviceEventEmitter.emit('showToast', '数据过时')
                     return this.dataRepository.fetchNetRepository(url);
-                }else{
-                    DeviceEventEmitter.emit('showToast','显示缓存数据')
+                } else {
+                    DeviceEventEmitter.emit('showToast', '显示缓存数据')
                 }
             })
-            .then(items=>{
-                if(!items || items.length ===0) return;
-                this.setState({
+            .then(items => {
+                if (!items || items.length === 0) return;
+                this.updateState({
                     dataSource: this.state.dataSource.cloneWithRows(items),
                     isLoading: false
                 })
-                DeviceEventEmitter.emit('showToast','显示网络数据')
+                DeviceEventEmitter.emit('showToast', '显示网络数据')
             })
             .catch(error => {
-                this.setState({
+                this.updateState({
                     result: JSON.stringify(result)
                 })
             })
     }
 
-    onSelect(item){
+    updateState(dic){
+        if(!this)return;
+        this.setState(dic)
+    }
+
+    onSelect(item) {
         this.props.navigator.push({
-            component:RepositoryDetail,
-            params:{
-                item:item,
+            component: RepositoryDetail,
+            params: {
+                item: item,
                 ...this.props
             }
         })
     }
 
-    getFetchUrl(timeSpan,category){
-        return  API_URL + category + timeSpan;
+    getFetchUrl(timeSpan, category) {
+        return API_URL + category + timeSpan.searchText;
     }
 
     renderRow(data) {
         return <TrendingCell
-            onSelect={()=>this.onSelect(data)}
+            onSelect={() => this.onSelect(data)}
             data={data}/>
     }
 
@@ -148,7 +230,7 @@ class TrendingTab extends Component {
                 refreshControl={
                     <RefreshControl
                         refreshing={this.state.isLoading}
-                        onRefresh={() => this.loadData()}
+                        onRefresh={() => this.onRefresh()}
                         colors={['#2196f3']}
                         tintColor={'#2196f3'}
                         title={'Loading...'}
@@ -171,5 +253,52 @@ const styles = StyleSheet.create({
         height: 20,
         borderWidth: 1
     },
+    dropdown_2: {
+        alignSelf: 'flex-end',
+        width: 150,
+        marginTop: 10,
+        right: 8,
+        borderWidth: 0,
+        borderRadius: 3,
+        backgroundColor: '#2196f3',
+    },
+    dropdown_2_text: {
+        marginVertical: 10,
+        marginHorizontal: 6,
+        fontSize: 18,
+        color: 'white',
+        textAlign: 'center',
+        textAlignVertical: 'center',
+    },
+    dropdown_2_dropdown: {
+        width: 150,
+        height: 140,
+        borderRadius: 3,
+        backgroundColor:'rgba(0,0,0,.5)'
+    },
+    dropdown_2_row: {
+        flexDirection: 'row',
+        height: 40,
+        alignItems: 'center',
+    },
+    dropdown_2_image: {
+        marginLeft: 4,
+        width: 30,
+        height: 30,
+    },
+    dropdown_2_row_text: {
+        marginHorizontal: 4,
+        fontSize: 16,
+        color: '#fff',
+        textAlignVertical: 'center',
+    },
+    dropdown_2_separator: {
+        height: 1,
+        backgroundColor: 'rgba(0,0,0,.5)',
+    },
+    textButton:{
+        fontSize:16,
+        color:'white'
+    }
 
 })
