@@ -19,8 +19,15 @@ import DataRepository, {FLAG_STORAGE} from './../expand/dao/DataRepository'
 import TrendingCell from './../component/TrendingCell'
 import LanguageDao, {FLAG_LANGUAGE} from '../expand/dao/LanguageDao'
 import RepositoryDetail from './RepositoryDetail'
+import FavoriteDao from '../expand/dao/FavoriteDao'
+import Utils from '../util/Utils'
+
+var favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_popular);
+var dataRepository = new DataRepository(FLAG_STORAGE.flag_trending)
+import ProjectModel from '../model/ProjectModel'
 
 const API_URL = 'https://github.com/trending/'
+
 import TimeSpan from '../model/TimeSpan'
 import Popover from '../component/Popover'
 import ModalDropdown from 'react-native-modal-dropdown';
@@ -38,9 +45,9 @@ export default class TrendingPage extends Component {
         this.languageDao = new LanguageDao(FLAG_LANGUAGE.flag_language);
         this.state = {
             languages: [],
-            isVisible:false,
-            buttonRect:{},
-            timeSpan:timeSpanTextArray[0],
+            isVisible: false,
+            buttonRect: {},
+            timeSpan: timeSpanTextArray[0],
         }
     }
 
@@ -48,10 +55,10 @@ export default class TrendingPage extends Component {
         this.load()
     }
 
-    onSelectTitle(index,value){
+    onSelectTitle(index, value) {
         //DeviceEventEmitter.emit('showToast', '选择是：'+value.showText +'值是:'+value.searchText);
         this.setState({
-            timeSpan:value
+            timeSpan: value
         })
     }
 
@@ -87,18 +94,18 @@ export default class TrendingPage extends Component {
         );
     }
 
-    renderModelTitleView (){
-        return <View style={{backgroundColor:'#2196f3'}}>
-        <ModalDropdown ref="dropdown_2"
-                       style={styles.dropdown_2}
-                       textStyle={styles.dropdown_2_text}
-                       dropdownStyle={styles.dropdown_2_dropdown}
-                       options={timeSpanTextArray}
-                       renderButtonText={(rowData) => this._dropdown_2_renderButtonText(rowData)}
-                       defaultValue="趋势"
-                       renderRow={this._dropdown_2_renderRow.bind(this)}
-                       onSelect={(index,value)=>this.onSelectTitle(index,value)}
-        />
+    renderModelTitleView() {
+        return <View style={{backgroundColor: '#2196f3'}}>
+            <ModalDropdown ref="dropdown_2"
+                           style={styles.dropdown_2}
+                           textStyle={styles.dropdown_2_text}
+                           dropdownStyle={styles.dropdown_2_dropdown}
+                           options={timeSpanTextArray}
+                           renderButtonText={(rowData) => this._dropdown_2_renderButtonText(rowData)}
+                           defaultValue="趋势"
+                           renderRow={this._dropdown_2_renderRow.bind(this)}
+                           onSelect={(index, value) => this.onSelectTitle(index, value)}
+            />
             <TouchableOpacity onPress={() => {
                 this.refs.dropdown_2.select(0);
             }}>
@@ -108,6 +115,7 @@ export default class TrendingPage extends Component {
             </TouchableOpacity>
         </View>
     }
+
     render() {
         let content = this.state.languages.length > 0 ? <ScrollableTabView
             tabBarBackgroundColor="#2196f3"
@@ -118,7 +126,8 @@ export default class TrendingPage extends Component {
             {this.state.languages.map((result, i, arr) => {
                 let lan = arr[i];
                 return lan.checked ?
-                    <TrendingTab key={i} tabLabel={lan.name} timeSpan={this.state.timeSpan} {...this.props}>{lan.name}</TrendingTab> : null
+                    <TrendingTab key={i} tabLabel={lan.name}
+                                 timeSpan={this.state.timeSpan} {...this.props}>{lan.name}</TrendingTab> : null
             })}
         </ScrollableTabView> : null;
 
@@ -138,56 +147,88 @@ export default class TrendingPage extends Component {
 class TrendingTab extends Component {
     constructor(props) {
         super(props)
-        this.dataRepository = new DataRepository(FLAG_STORAGE.flag_trending)
         this.state = {
             result: '',
             dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
             isLoading: false,
+            favoriteKeys: [],
 
         }
     }
 
     componentDidMount() {
-        this.loadData(this.props.timeSpan,true)
+        this.loadData(this.props.timeSpan, true)
     }
 
-    componentWillReceiveProps(nextProps){
-        if(nextProps.timeSpan !== this.props.timeSpan){
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.timeSpan !== this.props.timeSpan) {
             console.log(nextProps.timeSpan);
             this.loadData(nextProps.timeSpan)
         }
     }
 
-    onRefresh(){
+    onRefresh() {
         this.loadData(this.props.timeSpan);
     }
 
-    loadData(timeSpan,isRefresh) {
+
+    /**
+     * 更新project Item 收藏状态
+     */
+    flushFavoriteState(items) {
+        let projectModels = [];
+        for (let i = 0; i < items.length; i++) {
+            projectModels.push(new ProjectModel(items[i], Utils.checkFavorite(items[i], this.state.favoriteKeys)));
+        }
+        this.updateState({
+            isLoading: false,
+            dataSource: this.getDataSource(projectModels),
+        })
+    }
+
+    getDataSource(data) {
+        return this.state.dataSource.cloneWithRows(data);
+    }
+
+    getFavoriteKeys() {
+        let items = this.items ? this.items : []
+        favoriteDao.getFavoriteKeys()
+            .then(keys => {
+                if (keys) {
+                    this.updateState({
+                        favoriteKeys: keys
+                    })
+                }
+                this.flushFavoriteState(items);
+            })
+            .catch(e => {
+                console.log('error');
+                console.log(e);
+                this.flushFavoriteState(items);
+            })
+    }
+
+    loadData(timeSpan, isRefresh) {
         this.updateState({
             isLoading: true
         })
         let url = this.getFetchUrl(timeSpan, this.props.tabLabel)
         console.log(url);
-        this.dataRepository.fetchRepository(url)
+        dataRepository.fetchRepository(url)
             .then(result => {
-                let items = result && result.items ? result.items : result ? result : [];
-                this.updateState({
-                    dataSource: this.state.dataSource.cloneWithRows(items),
-                    isLoading: false
-                });
-                if (result && result.update_date && !this.dataRepository.checkData(result.update_date)) {
+                this.items = result && result.items ? result.items : result ? result : [];
+                this.getFavoriteKeys();
+                if (result && result.update_date && !dataRepository.checkData(result.update_date)) {
                     DeviceEventEmitter.emit('showToast', '数据过时')
-                    return this.dataRepository.fetchNetRepository(url);
+                    return dataRepository.fetchNetRepository(url);
                 } else {
                     DeviceEventEmitter.emit('showToast', '显示缓存数据')
                 }
             })
             .then(items => {
+                this.items = items;
                 if (!items || items.length === 0) return;
-                this.updateState({
-                    dataSource: this.state.dataSource.cloneWithRows(items),
-                    isLoading: false
-                })
+                this.getFavoriteKeys();
                 DeviceEventEmitter.emit('showToast', '显示网络数据')
             })
             .catch(error => {
@@ -197,29 +238,58 @@ class TrendingTab extends Component {
             })
     }
 
-    updateState(dic){
-        if(!this)return;
+    updateState(dic) {
+        if (!this) return;
         this.setState(dic)
     }
 
-    onSelect(item) {
+    onSelectRepository(projectModel) {
+        let title = projectModel.item.full_name ? projectModel.item.full_name : projectModel.item.fullName
         this.props.navigator.push({
             component: RepositoryDetail,
             params: {
-                item: item,
+                projectModel: projectModel,
+                title: title,
                 ...this.props
             }
         })
     }
 
+    /**
+     * favoiteIcon的单击回调函数
+     * @param item
+     * @param isFavorite
+     */
+    onFavorite(item, isFavorite) {
+        if (isFavorite) {
+            favoriteDao.saveFavoriteItem(item.fullName.toString(), JSON.stringify(item));
+        } else {
+            favoriteDao.removeFavoriteItem(item.fullName.toString())
+        }
+    }
+
+    //
+    // onSelect(item) {
+    //     this.props.navigator.push({
+    //         component: RepositoryDetail,
+    //         params: {
+    //             item: item,
+    //             ...this.props
+    //         }
+    //     })
+    // }
+
     getFetchUrl(timeSpan, category) {
         return API_URL + category + timeSpan.searchText;
     }
 
-    renderRow(data) {
+    renderRow(projectModel) {
         return <TrendingCell
-            onSelect={() => this.onSelect(data)}
-            data={data}/>
+            key={projectModel.item.fullName}
+            onSelect={() => this.onSelectRepository(projectModel)}
+            projectModel={projectModel}
+            onFavorite={(item, isFavorite) => this.onFavorite(item, isFavorite)}
+        />
     }
 
     render() {
@@ -274,7 +344,7 @@ const styles = StyleSheet.create({
         width: 150,
         height: 140,
         borderRadius: 3,
-        backgroundColor:'rgba(0,0,0,.5)'
+        backgroundColor: 'rgba(0,0,0,.5)'
     },
     dropdown_2_row: {
         flexDirection: 'row',
@@ -296,9 +366,9 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: 'rgba(0,0,0,.5)',
     },
-    textButton:{
-        fontSize:16,
-        color:'white'
+    textButton: {
+        fontSize: 16,
+        color: 'white'
     }
 
 })

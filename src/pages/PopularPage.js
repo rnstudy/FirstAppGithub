@@ -160,12 +160,12 @@ class PopularTab extends Component {
     }
 
     onSelect(projectModel){
-        console.log(projectModel.item);
+        let title = projectModel.item.full_name ? projectModel.item.full_name : projectModel.item.fullName
         this.props.navigator.push({
-            title:projectModel.item.name,
             component:RepositoryDetail,
             params:{
                 projectModel:projectModel,
+                title:title,
                 ...this.props
             }
         })

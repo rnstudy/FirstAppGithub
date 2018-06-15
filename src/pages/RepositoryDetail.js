@@ -16,7 +16,8 @@ export default class RepositoryDetail extends Component {
     constructor(props) {
         super(props);
         this.url= this.props.projectModel.item.html_url ? this.props.projectModel.item.html_url : TRENDING_URL+this.props.projectModel.item.fullName;
-        let title = this.props.projectModel.item.full_name
+        let title = this.props.title;
+        console.log('title:'+ title);
         this.state = {
             url:this.url,
             title:title,
