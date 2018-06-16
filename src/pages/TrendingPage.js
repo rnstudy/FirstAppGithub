@@ -168,7 +168,7 @@ class TrendingTab extends Component {
     }
 
     onRefresh() {
-        this.loadData(this.props.timeSpan);
+        this.loadData(this.props.timeSpan,true);
     }
 
 
@@ -218,7 +218,7 @@ class TrendingTab extends Component {
             .then(result => {
                 this.items = result && result.items ? result.items : result ? result : [];
                 this.getFavoriteKeys();
-                if (result && result.update_date && !dataRepository.checkData(result.update_date)) {
+                if (!this.items || isRefresh && result && result.update_date && !dataRepository.checkData(result.update_date)) {
                     DeviceEventEmitter.emit('showToast', '数据过时')
                     return dataRepository.fetchNetRepository(url);
                 } else {
@@ -248,8 +248,10 @@ class TrendingTab extends Component {
         this.props.navigator.push({
             component: RepositoryDetail,
             params: {
+                favoriteDao:favoriteDao,
                 projectModel: projectModel,
                 title: title,
+                flag:FLAG_STORAGE.flag_trending,
                 ...this.props
             }
         })
@@ -266,24 +268,16 @@ class TrendingTab extends Component {
         } else {
             favoriteDao.removeFavoriteItem(item.fullName.toString())
         }
-    }
 
-    //
-    // onSelect(item) {
-    //     this.props.navigator.push({
-    //         component: RepositoryDetail,
-    //         params: {
-    //             item: item,
-    //             ...this.props
-    //         }
-    //     })
-    // }
+    }
 
     getFetchUrl(timeSpan, category) {
         return API_URL + category + timeSpan.searchText;
     }
 
     renderRow(projectModel) {
+         console.log('trending page projectModel')
+         console.log(projectModel)
         return <TrendingCell
             key={projectModel.item.fullName}
             onSelect={() => this.onSelectRepository(projectModel)}

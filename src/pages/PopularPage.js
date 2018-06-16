@@ -129,7 +129,7 @@ class PopularTab extends Component {
             })
     }
 
-    loadData() {
+    loadData(isRefresh) {
         this.setState({
             isLoading: true
         })
@@ -138,7 +138,7 @@ class PopularTab extends Component {
             .then(result => {
                 this.items = result && result.items ? result.items : result ? result : [];
                 this.getFavoriteKeys();
-                if (result && result.update_date && !this.dataRepository.checkData(result.update_date)){
+                if (!this.items || isRefresh && result && result.update_date && !this.dataRepository.checkData(result.update_date)){
                    // DeviceEventEmitter.emit('showToast','数据过时')
                     return this.dataRepository.fetchNetRepository(url);
                 }else{
@@ -164,8 +164,10 @@ class PopularTab extends Component {
         this.props.navigator.push({
             component:RepositoryDetail,
             params:{
+                favoriteDao:favoriteDao,
                 projectModel:projectModel,
                 title:title,
+                flag:FLAG_STORAGE.flag_popular,
                 ...this.props
             }
         })
@@ -186,7 +188,7 @@ class PopularTab extends Component {
 
     renderRow(projectModel) {
         return <RepositoryCell
-            key={projectModel.item.id}
+            key={projectModel.item.id.toString()}
             onSelect={()=>this.onSelect(projectModel)}
             projectModel={projectModel}
             onFavorite={(item,isFavorite)=>this.onFavorite(item,isFavorite)}

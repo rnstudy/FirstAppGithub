@@ -36,16 +36,20 @@ export default class FavoriteDao {
                     favoriteKeys = JSON.parse(result)
                 }
                 var index = favoriteKeys.indexOf(key);
+                console.log('当前key');
                 console.log(key);
                 if (isAdd) {
                     if (index === -1) {
                         favoriteKeys.push(key);
                     }
+                    console.log('addKeys');
+                    console.log(favoriteKeys);
                 } else {
                     console.log('rm');
                     if (index !== -1) {
                         favoriteKeys.splice(index, 1);
                     }
+                    console.log('removeKeys');
                     console.log(favoriteKeys);
                 }
                 AsyncStorage.setItem(this.favoriteKey, JSON.stringify(favoriteKeys));
@@ -62,6 +66,8 @@ export default class FavoriteDao {
             AsyncStorage.getItem(this.favoriteKey,(error,result)=>{
                 if(!error){
                     try {
+                        console.log('Current FavoriteKey!')
+                        console.log(JSON.parse(result))
                         resolve(JSON.parse(result));
                     }catch (e) {
                         reject(e);

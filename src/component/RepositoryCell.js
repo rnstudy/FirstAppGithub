@@ -10,6 +10,8 @@ import {
 export default class RepositoryCell extends Component {
     constructor(props) {
         super(props);
+        //console.log('projectModel')
+        //console.log(this.props.projectModel)
         this.state = {
             isFavorite: this.props.projectModel.isFavorite,
             favoriteIcon: this.props.projectModel.isFavorite ? require('../../res/img/favi_select.png') : require('../../res/img/favi.png')
@@ -24,6 +26,8 @@ export default class RepositoryCell extends Component {
     }
 
     componentWillReceiveProps(nextProps){
+        console.log('nextProps isFavorite')
+        console.log(nextProps.projectModel.isFavorite)
         this.setFavoriteState(nextProps.projectModel.isFavorite)
     }
 
@@ -33,6 +37,7 @@ export default class RepositoryCell extends Component {
     }
 
     render() {
+       // console.log(this.state.favoriteIcon)
         let item = this.props.projectModel.item ? this.props.projectModel.item : this.props.projectModel;
         let favoriteButton = <TouchableOpacity
             onPress={() => this.onPressFavorite()}
