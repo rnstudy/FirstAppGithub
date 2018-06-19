@@ -20,6 +20,7 @@ import TrendingCell from '../component/TrendingCell'
 import ProjectModel from '../model/ProjectModel'
 import FavoriteDao from'../expand/dao/FavoriteDao'
 import Utils from'../util/Utils'
+import ArrayUtil from "../util/ArrayUtil";
 
 export default class FavoritePage extends Component {
     constructor(props) {
@@ -39,8 +40,8 @@ export default class FavoritePage extends Component {
             tabBarActiveTextColor="#fff"
             tabBarUnderlineStyle={{backgroundColor: '#efefef', height: 2}}
             renderTabBar={() => <ScrollableTabBar/>}>
-            <FavoriteTab  tabLabel='最热' flag={FLAG_STORAGE.flag_popular} {...this.props}/>
-            <FavoriteTab tabLabel='趋势' flag={FLAG_STORAGE.flag_trending} {...this.props}/>
+            <FavoriteTab key='0'  tabLabel='最热' flag={FLAG_STORAGE.flag_popular} {...this.props}/>
+            <FavoriteTab key='1'  tabLabel='趋势' flag={FLAG_STORAGE.flag_trending} {...this.props}/>
         </ScrollableTabView>;
         return <View style={styles.container}>
             <NavigationBar
@@ -60,7 +61,7 @@ class FavoriteTab extends Component {
     constructor(props) {
         super(props)
         this.favoriteDao = new FavoriteDao(this.props.flag);
-        this.dataRepository = new DataRepository(FLAG_STORAGE.flag_popular)
+        this.unFavoirteItems=[];
         this.state = {
             result: '',
             dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
@@ -70,7 +71,11 @@ class FavoriteTab extends Component {
     }
 
     componentDidMount() {
-        this.loadData()
+        this.loadData(true)
+    }
+
+    componentWillReceiveProps(nextProps){
+        this.loadData(false)
     }
 
     updateState(dic){
@@ -78,24 +83,34 @@ class FavoriteTab extends Component {
         this.setState(dic);
     }
 
+    getDataSource(data){
+        return this.state.dataSource.cloneWithRows(data);
+    }
 
-
-    loadData() {
-        this.setState({
-            isLoading: true
-        })
+    loadData(isShowLoading) {
+        if(isShowLoading){
+            this.setState({
+                isLoading: true
+            })
+        }
         this.favoriteDao.getAllItems()
             .then(items=>{
+                console.log('favi items')
+                console.log(items)
                 var resultData=[];
                 for(let i = 0; i<items.length;i++){
                     resultData.push(new ProjectModel(items[i],true));
                 }
+                console.log('resultData')
+                console.log(resultData)
                 this.updateState({
                     isLoading:false,
                     dataSource:this.getDataSource(resultData)
                 })
             })
             .catch(e=>{
+                console.log('favi error!!!')
+                console.log(e);
                 this.updateState({
                     isLoading:false
                 })
@@ -104,6 +119,7 @@ class FavoriteTab extends Component {
     }
 
     onSelect(projectModel){
+        let favoriteDao = this.favoriteDao;
         let title = projectModel.item.full_name ? projectModel.item.full_name : projectModel.item.fullName
         this.props.navigator.push({
             component:RepositoryDetail,
@@ -123,17 +139,31 @@ class FavoriteTab extends Component {
      * @param isFavorite
      */
     onFavorite(item,isFavorite){
+        console.log('favi onFavi!')
+        console.log(item)
+        let key = this.props.flag===FLAG_STORAGE.flag_popular?item.id.toString():item.fullName;
         if(isFavorite){
-            favoriteDao.saveFavoriteItem(item.id.toString(),JSON.stringify(item));
+            this.favoriteDao.saveFavoriteItem(key,JSON.stringify(item));
         }else{
-            favoriteDao.removeFavoriteItem(item.id.toString())
+            this.favoriteDao.removeFavoriteItem(key)
+        }
+        ArrayUtil.updateArray(this.unFavoirteItems,item);
+        if(this.unFavoirteItems.length>0){
+            if(this.props.flag === FLAG_STORAGE.flag_popular){
+                DeviceEventEmitter.emit('favoriteChange_popular');
+            }
+            if(this.props.flag === FLAG_STORAGE.flag_trending){
+                DeviceEventEmitter.emit('favoriteChange_trending');
+            }
         }
     }
 
     renderRow(projectModel) {
+        console.log('favi projectModel')
+        console.log(projectModel)
         let CellComponent = this.props.flag===FLAG_STORAGE.flag_popular?RepositoryCell:TrendingCell
         return <CellComponent
-            key={this.props.flag===FLAG_STORAGE.flag_popular?ProjectModel.item.id:ProjectModel.item.fullName}
+            key={this.props.flag===FLAG_STORAGE.flag_popular?projectModel.item.id:projectModel.item.fullName}
             onSelect={()=>this.onSelect(projectModel)}
             projectModel={projectModel}
             onFavorite={(item,isFavorite)=>this.onFavorite(item,isFavorite)}

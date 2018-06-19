@@ -22,7 +22,7 @@ import RepositoryDetail from './RepositoryDetail'
 import FavoriteDao from '../expand/dao/FavoriteDao'
 import Utils from '../util/Utils'
 
-var favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_popular);
+var favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_trending);
 var dataRepository = new DataRepository(FLAG_STORAGE.flag_trending)
 import ProjectModel from '../model/ProjectModel'
 
@@ -147,6 +147,7 @@ export default class TrendingPage extends Component {
 class TrendingTab extends Component {
     constructor(props) {
         super(props)
+        this.isFavoriteChange = false;
         this.state = {
             result: '',
             dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
@@ -158,17 +159,30 @@ class TrendingTab extends Component {
 
     componentDidMount() {
         this.loadData(this.props.timeSpan, true)
+        this.listener = DeviceEventEmitter.addListener('favoriteChange_trending', () => {
+            this.isFavoriteChange = true;
+        })
+    }
+
+    componentWillUnmount() {
+        if (this.listener) {
+            this.listener.remove();
+        }
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.timeSpan !== this.props.timeSpan) {
-            console.log(nextProps.timeSpan);
+           // console.log(nextProps.timeSpan);
             this.loadData(nextProps.timeSpan)
+        } else if (this.isFavoriteChange) {
+            this.isFavoriteChange = false;
+            this.loadData(this.props.timeSpan, true);
+          //  this.getFavoriteKeys();
         }
     }
 
     onRefresh() {
-        this.loadData(this.props.timeSpan,true);
+        this.loadData(this.props.timeSpan, true);
     }
 
 
@@ -176,10 +190,13 @@ class TrendingTab extends Component {
      * 更新project Item 收藏状态
      */
     flushFavoriteState(items) {
+        console.log('items length' + items.length);
         let projectModels = [];
         for (let i = 0; i < items.length; i++) {
             projectModels.push(new ProjectModel(items[i], Utils.checkFavorite(items[i], this.state.favoriteKeys)));
         }
+        console.log('projectModels')
+        console.log(projectModels)
         this.updateState({
             isLoading: false,
             dataSource: this.getDataSource(projectModels),
@@ -191,7 +208,9 @@ class TrendingTab extends Component {
     }
 
     getFavoriteKeys() {
+        console.log('trending items');
         let items = this.items ? this.items : []
+        console.log(items);
         favoriteDao.getFavoriteKeys()
             .then(keys => {
                 if (keys) {
@@ -213,7 +232,7 @@ class TrendingTab extends Component {
             isLoading: true
         })
         let url = this.getFetchUrl(timeSpan, this.props.tabLabel)
-        console.log(url);
+        //console.log(url);
         dataRepository.fetchRepository(url)
             .then(result => {
                 this.items = result && result.items ? result.items : result ? result : [];
@@ -248,10 +267,10 @@ class TrendingTab extends Component {
         this.props.navigator.push({
             component: RepositoryDetail,
             params: {
-                favoriteDao:favoriteDao,
+                favoriteDao: favoriteDao,
                 projectModel: projectModel,
                 title: title,
-                flag:FLAG_STORAGE.flag_trending,
+                flag: FLAG_STORAGE.flag_trending,
                 ...this.props
             }
         })
@@ -276,8 +295,8 @@ class TrendingTab extends Component {
     }
 
     renderRow(projectModel) {
-         console.log('trending page projectModel')
-         console.log(projectModel)
+        console.log('trending page projectModel')
+        console.log(projectModel)
         return <TrendingCell
             key={projectModel.item.fullName}
             onSelect={() => this.onSelectRepository(projectModel)}
@@ -291,6 +310,7 @@ class TrendingTab extends Component {
             <ListView
                 dataSource={this.state.dataSource}
                 renderRow={(data) => this.renderRow(data)}
+                enableEmptySections={true}
                 refreshControl={
                     <RefreshControl
                         refreshing={this.state.isLoading}
