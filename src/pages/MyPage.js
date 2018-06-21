@@ -6,7 +6,8 @@ import {
     Text,
     View,
     ScrollView,
-    TouchableHighlight
+    TouchableHighlight,
+    ListView
 } from 'react-native';
 import NavigationBar from './../component/NavigationBar'
 import CustomKeyPage from './CustomKeyPage'
@@ -16,6 +17,7 @@ import TrendingCell from "../component/TrendingCell";
 import {MORE_MENU} from '../component/MoreMenu'
 import GlobalStyles from '../../res/styles/GlobalStyles'
 import ViewUtil from'../util/ViewUtil'
+import AboutPage from'./AboutPage'
 
 
 export default class MyPage extends Component {
@@ -54,6 +56,7 @@ export default class MyPage extends Component {
             case MORE_MENU.About_Author:
                 break;
             case MORE_MENU.About:
+                TargetComponet=AboutPage;
                 break;
         }
         if(TargetComponet){
