@@ -1,12 +1,14 @@
 import React, {Component} from 'react';
 import {
     View,
+    Linking,
 } from 'react-native';
 
 import GlobalStyles from '../../res/styles/GlobalStyles'
 import ViewUtil from '../util/ViewUtil'
 import {MORE_MENU} from "../component/MoreMenu";
 import AboutCommon,{FLAG_ABOUT} from'./AboutCommon'
+import WebPage from "./WebPage";
 
 
 export default class AboutPage extends Component {
@@ -25,10 +27,21 @@ export default class AboutPage extends Component {
             case MORE_MENU.About_Author:
                 break;
             case MORE_MENU.WebSite:
+                TargetComponet=WebPage;
+                params.url='https://wurh.github.io/'
+                params.title='rahul.wu 博客'
                 break;
             case MORE_MENU.Feedback:
+                //Linking
+                var url = 'mailto://ro87630872@gmail.com';
+                Linking.canOpenURL(url).then(supported => {
+                    if (!supported) {
+                        console.log('Can\'t handle url: ' + url);
+                    } else {
+                        return Linking.openURL(url);
+                    }
+                }).catch(err => console.error('An error occurred', err));
                 break;
-
         }
         if(TargetComponet){
             this.props.navigator.push({

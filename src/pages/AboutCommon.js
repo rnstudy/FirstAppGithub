@@ -6,6 +6,7 @@ import {
     Text,
     View,
     Platform,
+
 } from 'react-native';
 
 import ViewUtil from '../util/ViewUtil'
