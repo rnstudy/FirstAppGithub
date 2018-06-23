@@ -9,21 +9,108 @@ import {
     ListView,
     RefreshControl,
     DeviceEventEmitter,
-    TouchableOpacity
+    TouchableOpacity,
 } from 'react-native';
 
 import NavigationBar from './../component/NavigationBar'
 import ViewUtil from "../util/ViewUtil";
 import GlobalStyles from '../../res/styles/GlobalStyles'
+import FavoriteDao from '../expand/dao/FavoriteDao'
+import {FLAG_STORAGE} from '../expand/dao/DataRepository'
+import Utils from "../util/Utils";
+import RepositoryCell from './../component/RepositoryCell'
+import ProjectModel from "../model/ProjectModel";
+import ActionUtil from "../util/ActionUtil";
+const API_URL = 'https://api.github.com/search/repositories?q='
+const QUERY_STR = '&sort=stars'
 
 export default class SearchPage extends Component {
     constructor(props) {
         super(props);
+        this.favoriteDao= new FavoriteDao(FLAG_STORAGE.flag_popular)
+        this.favoriteKeys=[];
         this.state = {
             rightButtonText: '搜索',
+            isLoading: false,
+            dataSource: new ListView.DataSource({
+                rowHasChanged: (r1, r2) => r1 !== r2,
+            })
+
         }
     }
-    onBackPress(){
+
+
+    getDataSource(data) {
+        return this.state.dataSource.cloneWithRows(data);
+    }
+
+    genFetchUrl(key) {
+        return API_URL + key + QUERY_STR;
+    }
+
+    /**
+     * 更新project Item 收藏状态
+     */
+    flushFavoriteState() {
+        let projectModels = [];
+        let items = this.items;
+        console.log('search result');
+        console.log(items);
+        for (let i = 0; i < items.length; i++) {
+            projectModels.push(new ProjectModel(items[i], Utils.checkFavorite(items[i], this.favoriteKeys)));
+        }
+        this.updateState({
+            isLoading: false,
+            dataSource: this.getDataSource(projectModels),
+            rightButtonText:'搜索'
+        })
+    }
+
+    /**
+     * huouq
+     */
+    getFavoriteKeys() {
+        console.log('search getFavoriteKeys')
+        this.favoriteDao.getFavoriteKeys()
+            .then(keys => {
+                console.log(keys);
+                this.favoriteKeys = keys || [];
+                this.flushFavoriteState();
+            })
+            .catch(e => {
+                this.flushFavoriteState();
+            })
+    }
+
+    loadData() {
+        this.updateState({
+            isLoading: true,
+        })
+        fetch(this.genFetchUrl(this.inputKey))
+            .then(response => response.json())
+            .then(responseData => {
+                if (!this || !responseData || responseData.items && responseData.items.length === 0) {
+                    console.log(' 什么都没找到！！！！ ')
+                    this.updateState({
+                        isLoading: false,
+                        rightButtonText: '搜索'
+                    })
+                    return;
+                }
+                this.items = responseData.items;
+                console.log(' this.items ')
+                console.log( this.items )
+                this.getFavoriteKeys();
+            }).catch(e=>{
+                this.updateState({
+                    isLoading:false,
+                    rightButtonText:'搜索',
+                })
+            console.log(e);
+        })
+    }
+
+    onBackPress() {
         this.refs.input.blur();
         this.props.navigator.pop();
     }
@@ -33,9 +120,11 @@ export default class SearchPage extends Component {
             this.updateState({
                 rightButtonText: '取消'
             })
-        }else{
+            this.loadData();
+        } else {
             this.updateState({
-                rightButtonText: '搜索'
+                rightButtonText: '搜索',
+                isLoading:false
             })
         }
     }
@@ -49,6 +138,7 @@ export default class SearchPage extends Component {
         let inputView = <TextInput
             style={styles.textInput}
             ref="input"
+            onChangeText={text => this.inputKey = text}
         ></TextInput>
 
         let rightButton = <TouchableOpacity
@@ -76,14 +166,35 @@ export default class SearchPage extends Component {
         </View>
     }
 
+    renderRow(projectModel) {
+        return <RepositoryCell
+            key={projectModel.item.id.toString()}
+            onSelect={()=> ActionUtil.onSelectRepository({
+                favoriteDao: this.favoriteDao,
+                projectModel: projectModel,
+                title: projectModel.item.full_name ? projectModel.item.full_name : projectModel.item.fullName,
+                flag: FLAG_STORAGE.flag_popular,
+                ...this.props
+            })}
+            projectModel={projectModel}
+            onFavorite={(item, isFavorite) => ActionUtil.onFavorite(this.favoriteDao,item, isFavorite,FLAG_STORAGE.flag_popular)}
+
+        />
+    }
+
     render() {
         let statusBar = null;
         if (Platform.OS === 'ios') {
             statusBar = <View style={[styles.statusBar, {backgroundColor: '#2196f3'}]}/>
         }
+        let listView = <ListView
+            dataSource={this.state.dataSource}
+            renderRow={(e)=>this.renderRow(e)}
+        />
         return <View style={GlobalStyles.root_contianer}>
             {statusBar}
             {this.renderNavBar()}
+            {listView}
         </View>
     }
 }
@@ -105,7 +216,7 @@ const styles = StyleSheet.create({
     textInput: {
         flex: 1,
         height: (Platform.OS === 'ios') ? 30 : 40,
-        borderWidth:  (Platform.OS === 'ios') ? 1 : 0,
+        borderWidth: (Platform.OS === 'ios') ? 1 : 0,
         borderColor: "white",
         alignSelf: 'center',
         paddingLeft: 5,

@@ -53,24 +53,24 @@ export default class PopularPage extends Component {
             })
     }
 
-    renderRightButton(){
+    renderRightButton() {
         return <View>
             <TouchableOpacity
 
-                onPress={()=>{
+                onPress={() => {
                     this.props.navigator.push({
-                        component:SearchPage,
-                        params:{
+                        component: SearchPage,
+                        params: {
                             ...this.props
                         }
                     })
                 }
                 }
             >
-                <View style={{padding:5,marginRight:8,right:0,marginLeft:8,top:8}}>
+                <View style={{padding: 5, marginRight: 8, right: 0, marginLeft: 8, top: 8}}>
                     <Image
-                        style={[{width:24,height:24},{tintColor:'white'}]}
-                        source = {require('../../res/img/Search.png')}
+                        style={[{width: 24, height: 24}, {tintColor: 'white'}]}
+                        source={require('../../res/img/Search.png')}
                     />
                 </View>
             </TouchableOpacity>
@@ -206,23 +206,10 @@ class PopularTab extends Component {
             })
     }
 
-    /**
-     * favoiteIcon的单击回调函数
-     * @param item
-     * @param isFavorite
-     */
-    onFavorite(item, isFavorite) {
-        if (isFavorite) {
-            favoriteDao.saveFavoriteItem(item.id.toString(), JSON.stringify(item));
-        } else {
-            favoriteDao.removeFavoriteItem(item.id.toString())
-        }
-    }
-
     renderRow(projectModel) {
         return <RepositoryCell
             key={projectModel.item.id.toString()}
-            onSelect={()=> ActionUtil.onSelectRepository({
+            onSelect={() => ActionUtil.onSelectRepository({
                 favoriteDao: favoriteDao,
                 projectModel: projectModel,
                 title: projectModel.item.full_name ? projectModel.item.full_name : projectModel.item.fullName,
@@ -230,7 +217,7 @@ class PopularTab extends Component {
                 ...this.props
             })}
             projectModel={projectModel}
-            onFavorite={(item, isFavorite) => this.onFavorite(item, isFavorite)}
+            onFavorite={(item, isFavorite) => ActionUtil.onFavorite(favoriteDao, item, isFavorite,FLAG_STORAGE.flag_popular)}
 
         />
     }

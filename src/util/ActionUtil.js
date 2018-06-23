@@ -15,4 +15,21 @@ export default class ActionUtil {
             }
         })
     }
+
+    /**
+     * favoiteIcon的单击回调函数
+     * @param item
+     * @param isFavorite
+     */
+    static onFavorite(favoriteDao, item, isFavorite,flag) {
+        let key = flag === FLAG_STORAGE.flag_trending? item.fullName:item.id.toString()
+        ///let key = item.id?item.id.toString():item.fullName
+        if (isFavorite) {
+            favoriteDao.saveFavoriteItem(key, JSON.stringify(item));
+        } else {
+            favoriteDao.removeFavoriteItem(key)
+        }
+    }
+
+
 }

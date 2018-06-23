@@ -263,20 +263,6 @@ class TrendingTab extends Component {
         this.setState(dic)
     }
 
-    /**
-     * favoiteIcon的单击回调函数
-     * @param item
-     * @param isFavorite
-     */
-    onFavorite(item, isFavorite) {
-        if (isFavorite) {
-            favoriteDao.saveFavoriteItem(item.fullName.toString(), JSON.stringify(item));
-        } else {
-            favoriteDao.removeFavoriteItem(item.fullName.toString())
-        }
-
-    }
-
     getFetchUrl(timeSpan, category) {
         return API_URL + category + timeSpan.searchText;
     }
@@ -294,7 +280,7 @@ class TrendingTab extends Component {
                 ...this.props
             })}
             projectModel={projectModel}
-            onFavorite={(item, isFavorite) => this.onFavorite(item, isFavorite)}
+            onFavorite={(item, isFavorite) => ActionUtil.onFavorite(favoriteDao,item, isFavorite,FLAG_STORAGE.flag_trending)}
         />
     }
 

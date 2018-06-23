@@ -118,7 +118,7 @@ export default class AboutCommon {
                         ...this.props
                     })}
                     projectModel={projectModel}
-                    onFavorite={(item, isFavorite) => this.onFavorite(item, isFavorite)}
+                    onFavorite={(item, isFavorite) => ActionUtil.onFavorite(this.favoriteDao,item, isFavorite,FLAG_STORAGE.flag_popular)}
                 />
             )
         }
