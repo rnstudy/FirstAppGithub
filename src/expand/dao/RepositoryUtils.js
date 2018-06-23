@@ -4,11 +4,11 @@ import {
 
 import DataRepository ,{FLAG_STORAGE} from "./DataRepository";
 import Utils from'../../util/Utils'
-var itemMap = new Map();
 export default class RepositoryUtils {
     constructor(aboutCommon){
         this.aboutCommon = aboutCommon;
         this.dataRepository = new DataRepository(FLAG_STORAGE.flag_my);
+        this.itemMap = new Map();
     }
 
     /**
@@ -17,9 +17,9 @@ export default class RepositoryUtils {
      * @param v
      */
     updateData(k,v){
-        itemMap.set(k,v);
+        this.itemMap.set(k,v);
         var arr = [];
-        for(let value of itemMap.values()){
+        for(let value of this.itemMap.values()){
             arr.push(value)
         }
         this.aboutCommon.onNotifyDataChanged(arr);

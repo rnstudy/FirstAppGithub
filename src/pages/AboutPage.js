@@ -9,6 +9,7 @@ import ViewUtil from '../util/ViewUtil'
 import {MORE_MENU} from "../component/MoreMenu";
 import AboutCommon,{FLAG_ABOUT} from'./AboutCommon'
 import WebPage from "./WebPage";
+import AboutMePage from "./AboutMePage"
 import config from '../../res/data/config'
 
 
@@ -33,6 +34,7 @@ export default class AboutPage extends Component {
         let TargetComponet,params={...this.props,menuType:tab}
         switch (tab) {
             case MORE_MENU.About_Author:
+                TargetComponet=AboutMePage;
                 break;
             case MORE_MENU.WebSite:
                 TargetComponet=WebPage;

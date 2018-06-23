@@ -19,7 +19,6 @@ export default class RepositoryDetail extends Component {
         super(props);
         this.url= this.props.projectModel.item.html_url ? this.props.projectModel.item.html_url : TRENDING_URL+this.props.projectModel.item.fullName;
         let title = this.props.title;
-        console.log('detail flag:'+ this.props.flag);
         this.favoriteDao = this.props.favoriteDao
         this.state = {
             url:this.url,

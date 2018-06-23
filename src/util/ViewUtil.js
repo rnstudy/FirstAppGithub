@@ -17,23 +17,23 @@ export default class ViewUtil {
      * @param tintStyle 图标着色
      * @param expandableIco 右侧图标
      */
-    static getSettingItem(callBack,icon,text,tintStyle,expandableIco){
-        return(
+    static getSettingItem(callBack, icon, text, tintStyle, expandableIco) {
+        return (
             <TouchableOpacity
                 onPress={callBack}
             >
                 <View style={styles.setting_item_container}>
-                    <View style={{flexDirection:'row',alignItems:'center'}}>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
                         <Image
                             resizeMode='stretch'
-                            source={icon}
-                            style={[{width:16,height:16,marginRight:10},tintStyle]}
+                            source={icon !== '' ? icon : null}
+                            style={[{width: 16, height: 16, marginRight: 10}, tintStyle]}
                         />
                         <Text>{text}</Text>
                     </View>
                     <Image
-                        source={expandableIco?expandableIco:require('../../res/img/enter.png')}
-                        style={[{width:22,height:22,marginRight:10},{tintColor:'#2196f3'}]}
+                        source={expandableIco ? expandableIco : require('../../res/img/enter.png')}
+                        style={[{width: 22, height: 22, marginRight: 10}, {tintColor: '#2196f3'}]}
                     />
                 </View>
             </TouchableOpacity>
@@ -56,12 +56,12 @@ const styles = StyleSheet.create({
         margin: 10,
         tintColor: '#fff'
     },
-    setting_item_container:{
-      backgroundColor:'white',
-        padding:10,
-        height:60,
-        alignItems:'center',
-        justifyContent:'space-between',
-        flexDirection:'row'
+    setting_item_container: {
+        backgroundColor: 'white',
+        padding: 10,
+        height: 60,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexDirection: 'row'
     }
 })

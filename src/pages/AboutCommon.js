@@ -19,6 +19,7 @@ import RepositoryCell from "../component/RepositoryCell";
 import RepositoryDetail from "./RepositoryDetail";
 import RepositoryUtils from "../expand/dao/RepositoryUtils";
 
+
 export var FLAG_ABOUT = {flag_about: 'about', flag_about_me: 'about_me'}
 
 export default class AboutCommon {
@@ -68,6 +69,8 @@ export default class AboutCommon {
                 item:data
             })
         }
+        console.log('1----------1');
+        console.log(projectModels);
         this.updateState({
             projectModels:projectModels
         })
@@ -114,15 +117,14 @@ export default class AboutCommon {
      * @param projectModels
      */
     renderRepository(projectModels){
-        //console.log('about page models')
-        //console.log(projectModels)
         if(!projectModels || projectModels.length ===0) return null;
         let views = [];
         for(let i = 0, l=projectModels.length;i<l;i++){
             let projectModel = projectModels[i];
+            let keyId = projectModel.item.id?projectModel.item.id:i;
             views.push(
                 <RepositoryCell
-                    key={projectModel.item.id.toString()}
+                    key={keyId}
                     onSelect={() => this.onSelect(projectModel)}
                     projectModel={projectModel}
                     onFavorite={(item, isFavorite) => this.onFavorite(item, isFavorite)}
