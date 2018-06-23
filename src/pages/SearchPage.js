@@ -10,6 +10,7 @@ import {
     RefreshControl,
     DeviceEventEmitter,
     TouchableOpacity,
+    ActivityIndicator
 } from 'react-native';
 
 import NavigationBar from './../component/NavigationBar'
@@ -21,17 +22,22 @@ import Utils from "../util/Utils";
 import RepositoryCell from './../component/RepositoryCell'
 import ProjectModel from "../model/ProjectModel";
 import ActionUtil from "../util/ActionUtil";
+import LanguageDao,{FLAG_LANGUAGE} from '../expand/dao/LanguageDao'
+
 const API_URL = 'https://api.github.com/search/repositories?q='
 const QUERY_STR = '&sort=stars'
+
 
 export default class SearchPage extends Component {
     constructor(props) {
         super(props);
         this.favoriteDao= new FavoriteDao(FLAG_STORAGE.flag_popular)
         this.favoriteKeys=[];
+        this.LanguageDao = new LanguageDao(FLAG_LANGUAGE.flag_key)
         this.state = {
             rightButtonText: '搜索',
             isLoading: false,
+            showBottomButton:false,
             dataSource: new ListView.DataSource({
                 rowHasChanged: (r1, r2) => r1 !== r2,
             })
@@ -39,6 +45,50 @@ export default class SearchPage extends Component {
         }
     }
 
+    saveKey(){
+        let key = this.inputKey;
+        if(this.checkKeyIsExist(this.keys,key)){
+            DeviceEventEmitter.emit('showToast',key+'已经存在');
+        }else{
+            key={
+                "path":key,
+                "name":key,
+                "checked":true
+            }
+            this.keys.unshift(key);
+            this.LanguageDao.save(this.keys);
+            DeviceEventEmitter.emit('showToast',key.name+'保存成功');
+            this.updateState({
+                showBottomButton:false
+            })
+        }
+    }
+
+    /**
+     * 获取所有标签
+     * @returns {Promise<void>}
+     */
+   async initKeys(){
+        this.keys = await this.LanguageDao.fetch();
+    }
+
+    /**
+     * j检查Key是否存在与Keys中
+     * @param keys
+     * @param key
+     */
+    checkKeyIsExist(keys,key){
+       for(let i=0; i<keys.length;i++){
+           if(key.toLowerCase()===keys[i].name.toLowerCase()){
+               return true
+           }
+       }
+       return false;
+    }
+
+    componentDidMount(){
+        this.initKeys()
+    }
 
     getDataSource(data) {
         return this.state.dataSource.cloneWithRows(data);
@@ -98,9 +148,17 @@ export default class SearchPage extends Component {
                     return;
                 }
                 this.items = responseData.items;
-                console.log(' this.items ')
-                console.log( this.items )
                 this.getFavoriteKeys();
+                console.log(this.checkKeyIsExist(this.keys,this.inputKey))
+                if(!this.checkKeyIsExist(this.keys,this.inputKey)){
+                    this.updateState({
+                        showBottomButton:true,
+                    })
+                }else{
+                    this.updateState({
+                        showBottomButton:false,
+                    })
+                }
             }).catch(e=>{
                 this.updateState({
                     isLoading:false,
@@ -187,14 +245,37 @@ export default class SearchPage extends Component {
         if (Platform.OS === 'ios') {
             statusBar = <View style={[styles.statusBar, {backgroundColor: '#2196f3'}]}/>
         }
-        let listView = <ListView
+        let listView = !this.state.isLoading? <ListView
             dataSource={this.state.dataSource}
             renderRow={(e)=>this.renderRow(e)}
-        />
+        />:null
+        let indicatorView = this.state.isLoading ? <ActivityIndicator
+            style={styles.centering}
+            size='large'
+            animating = {this.state.isLoading}
+        />:null
+
+        let resultView =<View style={{flex:1}}>
+            {indicatorView}
+            {listView}
+        </View>
+
+        let bottomButton = this.state.showBottomButton ?
+            <TouchableOpacity
+                style={[styles.bottomButton,{backgroundColor: '#2196f3'}]}
+                onPress={()=>{
+                    this.saveKey();
+                }}
+            >
+                <View style={{justifyContent:'center'}}>
+                    <Text style={styles.title}>添加标签</Text>
+                </View>
+            </TouchableOpacity>:null;
         return <View style={GlobalStyles.root_contianer}>
             {statusBar}
             {this.renderNavBar()}
-            {listView}
+            {resultView}
+            {bottomButton}
         </View>
     }
 }
@@ -230,6 +311,23 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: 'white',
         fontWeight: '500'
+    },
+    centering:{
+        alignItems:'center',
+        justifyContent:'center',
+        flex:1,
+    },
+    bottomButton:{
+        alignItems:'center',
+        justifyContent:'center',
+        opacity:0.9,
+        height:40,
+        position:'absolute',
+        left:10,
+        top:GlobalStyles.window_height-45,
+        right:10,
+        borderRadius:5
+
     }
 
 })
