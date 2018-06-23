@@ -8,7 +8,8 @@ import {
     TextInput,
     ListView,
     RefreshControl,
-    DeviceEventEmitter
+    DeviceEventEmitter,
+    TouchableOpacity
 } from 'react-native';
 
 import ScrollableTabView, {ScrollableTabBar} from 'react-native-scrollable-tab-view'
@@ -22,6 +23,7 @@ import FavoriteDao from '../expand/dao/FavoriteDao'
 import Utils from '../util/Utils'
 import ArrayUtil from "../util/ArrayUtil";
 import ActionUtil from "../util/ActionUtil";
+import SearchPage from './SearchPage'
 
 const URL = 'https://api.github.com/search/repositories?q='
 const QUERY_STR = '&sort=stars'
@@ -51,6 +53,30 @@ export default class PopularPage extends Component {
             })
     }
 
+    renderRightButton(){
+        return <View>
+            <TouchableOpacity
+
+                onPress={()=>{
+                    this.props.navigator.push({
+                        component:SearchPage,
+                        params:{
+                            ...this.props
+                        }
+                    })
+                }
+                }
+            >
+                <View style={{padding:5,marginRight:8,right:0,marginLeft:8,top:8}}>
+                    <Image
+                        style={[{width:24,height:24},{tintColor:'white'}]}
+                        source = {require('../../res/img/Search.png')}
+                    />
+                </View>
+            </TouchableOpacity>
+        </View>
+    }
+
     render() {
         let content = this.state.languages.length > 0 ? <ScrollableTabView
             tabBarBackgroundColor="#2196f3"
@@ -71,6 +97,7 @@ export default class PopularPage extends Component {
                 statusBar={{
                     backgroundColor: '#2196f3'
                 }}
+                rightButton={this.renderRightButton()}
             />
             {content}
         </View>
