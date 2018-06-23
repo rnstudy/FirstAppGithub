@@ -33,7 +33,7 @@ export default class ViewUtil {
                     </View>
                     <Image
                         source={expandableIco ? expandableIco : require('../../res/img/enter.png')}
-                        style={[{width: 22, height: 22, marginRight: 10}, {tintColor: '#2196f3'}]}
+                        style={[{width: 22, height: 22, marginRight: 10}, tintStyle]}
                     />
                 </View>
             </TouchableOpacity>

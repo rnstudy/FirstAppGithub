@@ -26,7 +26,8 @@ export default class AboutMePage extends Component {
             showRepository: false,
             showBlog: false,
             showQQ: false,
-            showContact: false
+            showContact: false,
+            theme:this.props.theme,
         }
     }
 
@@ -126,7 +127,7 @@ export default class AboutMePage extends Component {
             let title = isShowAccount ? dic[i].title + ':' + dic[i].account : dic[i].title;
             views.push(
                 <View key={i}>
-                    {ViewUtil.getSettingItem(() => this.onClick(dic[i]), '', title, {tintColor: '#2196f3'})}
+                    {ViewUtil.getSettingItem(() => this.onClick(dic[i]), '', title, this.state.theme.styles.tabBarSelectedIcon)}
                     <View style={GlobalStyles.line}/>
                 </View>
             )
@@ -140,25 +141,25 @@ export default class AboutMePage extends Component {
             {/*{this.aboutCommon.renderRepository(this.state.projectModels)}*/}
             {ViewUtil.getSettingItem(() => {
                 this.onClick(FLLAG.BLOG)
-            }, require('../../res/img/blog.png'), FLLAG.BLOG.name, {tintColor: '#2196f3'}, this.getClickIcon(this.state.showBlog))}
+            }, require('../../res/img/blog.png'), FLLAG.BLOG.name, this.state.theme.styles.tabBarSelectedIcon, this.getClickIcon(this.state.showBlog))}
             <View style={GlobalStyles.line}/>
             {this.state.showBlog ? this.renderItems(FLLAG.BLOG.items) : null}
 
             {ViewUtil.getSettingItem(() => {
                 this.onClick(FLLAG.REPOSITORY)
-            }, require('../../res/img/code.png'), FLLAG.REPOSITORY, {tintColor: '#2196f3'}, this.getClickIcon(this.state.showRepository))}
+            }, require('../../res/img/code.png'), FLLAG.REPOSITORY, this.state.theme.styles.tabBarSelectedIcon, this.getClickIcon(this.state.showRepository))}
             <View style={GlobalStyles.line}/>
             {this.state.showRepository ? this.aboutCommon.renderRepository(this.state.projectModels) : null}
 
             {ViewUtil.getSettingItem(() => {
                 this.onClick(FLLAG.QQ)
-            }, require('../../res/img/group.png'), FLLAG.QQ.name, {tintColor: '#2196f3'}, this.getClickIcon(this.state.showQQ))}
+            }, require('../../res/img/group.png'), FLLAG.QQ.name,this.state.theme.styles.tabBarSelectedIcon, this.getClickIcon(this.state.showQQ))}
             <View style={GlobalStyles.line}/>
             {this.state.showQQ ? this.renderItems(FLLAG.QQ.items, true) : null}
 
             {ViewUtil.getSettingItem(() => {
                 this.onClick(FLLAG.CONTACT)
-            }, require('../../res/img/contact.png'), FLLAG.CONTACT.name, {tintColor: '#2196f3'}, this.getClickIcon(this.state.showContact))}
+            }, require('../../res/img/contact.png'), FLLAG.CONTACT.name, this.state.theme.styles.tabBarSelectedIcon, this.getClickIcon(this.state.showContact))}
             <View style={GlobalStyles.line}/>
             {this.state.showContact ? this.renderItems(FLLAG.CONTACT.items, true) : null}
 

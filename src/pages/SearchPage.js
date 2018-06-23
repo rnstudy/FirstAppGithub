@@ -43,8 +43,8 @@ export default class SearchPage extends Component {
             showBottomButton:false,
             dataSource: new ListView.DataSource({
                 rowHasChanged: (r1, r2) => r1 !== r2,
-            })
-
+            }),
+            theme:this.props.theme,
         }
     }
 
@@ -116,8 +116,6 @@ export default class SearchPage extends Component {
     flushFavoriteState() {
         let projectModels = [];
         let items = this.items;
-        console.log('search result');
-        console.log(items);
         for (let i = 0; i < items.length; i++) {
             projectModels.push(new ProjectModel(items[i], Utils.checkFavorite(items[i], this.favoriteKeys)));
         }
@@ -227,7 +225,7 @@ export default class SearchPage extends Component {
             </View>
         </TouchableOpacity>
         return <View style={{
-            backgroundColor: '#2196f3',
+            backgroundColor: this.state.theme.styles.navBar.backgroundColor,
             flexDirection: 'row',
             alignItems: 'center',
             height: (Platform.OS === 'ios') ? GlobalStyles.nav_bar_height_ios : GlobalStyles.nav_bar_height_android,
@@ -258,7 +256,7 @@ export default class SearchPage extends Component {
     render() {
         let statusBar = null;
         if (Platform.OS === 'ios') {
-            statusBar = <View style={[styles.statusBar, {backgroundColor: '#2196f3'}]}/>
+            statusBar = <View style={[styles.statusBar, this.state.theme.styles.navBar]}/>
         }
         let listView = !this.state.isLoading? <ListView
             dataSource={this.state.dataSource}
@@ -277,7 +275,7 @@ export default class SearchPage extends Component {
 
         let bottomButton = this.state.showBottomButton ?
             <TouchableOpacity
-                style={[styles.bottomButton,{backgroundColor: '#2196f3'}]}
+                style={[styles.bottomButton,this.state.theme.styles.navBar]}
                 onPress={()=>{
                     this.saveKey();
                 }}

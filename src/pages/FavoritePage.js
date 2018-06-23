@@ -27,6 +27,7 @@ export default class FavoritePage extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            theme:this.props.theme
         }
     }
 
@@ -35,8 +36,11 @@ export default class FavoritePage extends Component {
 
 
     render() {
+        var statusBar={
+            backgroundColor: this.state.theme.styles.navBar.backgroundColor
+        }
         let content = <ScrollableTabView
-            tabBarBackgroundColor="#2196f3"
+            tabBarBackgroundColor={this.state.theme.themeColor}
             tabBarInactiveTextColor="mintcream"
             tabBarActiveTextColor="#fff"
             tabBarUnderlineStyle={{backgroundColor: '#efefef', height: 2}}
@@ -47,10 +51,8 @@ export default class FavoritePage extends Component {
         return <View style={styles.container}>
             <NavigationBar
                 title={'收藏'}
-                style={{backgroundColor: '#2196f3'}}
-                statusBar={{
-                    backgroundColor: '#2196f3'
-                }}
+                style={this.state.theme.styles.navBar}
+                statusBar={statusBar}
             />
             {content}
         </View>
@@ -67,7 +69,8 @@ class FavoriteTab extends Component {
             result: '',
             dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
             isLoading: false,
-            favoriteKeys:[]
+            favoriteKeys:[],
+            theme:this.props.theme
         }
     }
 
@@ -154,7 +157,7 @@ class FavoriteTab extends Component {
             onSelect={()=>this.onSelect(projectModel)}
             projectModel={projectModel}
             onFavorite={(item,isFavorite)=>ActionUtil.onFavorite(this.favoriteDao,item,isFavorite,this.props.flag)}
-
+            theme={this.props.theme}
         />
     }
 
@@ -168,10 +171,10 @@ class FavoriteTab extends Component {
                     <RefreshControl
                         refreshing={this.state.isLoading}
                         onRefresh={() => this.loadData()}
-                        colors={['#2196f3']}
-                        tintColor={'#2196f3'}
+                        colors={[this.props.theme.themeColor]}
+                        tintColor={this.props.theme.themeColor}
                         title={'Loading...'}
-                        titleColor={'#2196f3'}
+                        titleColor={this.props.theme.themeColor}
                     />
                 }
             />

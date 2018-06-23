@@ -26,7 +26,7 @@ class SortCell extends Component {
                 {...this.props.sortHandlers}
             >
                 <View style={styles.row}>
-                    <Image style={styles.image} source={require('../../res/img/list.png')} />
+                    <Image style={[styles.image,this.state.theme.styles.tabBarSelectedIcon]} source={require('../../res/img/list.png')} />
                     <Text>{this.props.data.name}</Text>
                 </View>
             </TouchableHighlight>
@@ -42,6 +42,7 @@ export default class SortKeyPage extends Component {
         this.orignalCheckedArray = []; //已订阅原始数组
         this.state = {
             checkedArray: [],
+            theme:this.props.theme,
         };
     }
 
@@ -122,7 +123,7 @@ export default class SortKeyPage extends Component {
         </TouchableOpacity>
         let navigationBar =  <NavigationBar
             title={title}
-            style={{backgroundColor: '#2196f3'}}
+            style={this.state.theme.styles.navBar}
             leftButton={ViewUtil.getLeftButton(()=>this.onBack())}
             rightButton={rightButton}
         />
@@ -169,7 +170,6 @@ const styles = StyleSheet.create({
         alignItems:'center'
     },
     image:{
-        tintColor:'#2196F3',
         width:20,
         height:20,
         marginRight:10

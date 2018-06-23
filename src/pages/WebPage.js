@@ -21,7 +21,8 @@ export default class WebPage extends Component {
         this.state = {
             url:this.props.url,
             title:this.props.title,
-            canGoBack:false
+            canGoBack:false,
+            theme:this.props.theme,
         };
     }
     renderButton(image){
@@ -55,9 +56,7 @@ export default class WebPage extends Component {
             <View style={GlobalStyles.root_contianer}>
                 <NavigationBar
                     title={'WebView使用'}
-                    style={{
-                        backgroundColor:'#2196f3'
-                    }}
+                    style={this.state.theme.styles.navBar}
                     leftButton={ViewUtil.getLeftButton(()=>this.onBackPress())}
                 />
                 <WebView

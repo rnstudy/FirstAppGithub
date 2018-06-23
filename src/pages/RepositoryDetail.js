@@ -25,6 +25,7 @@ export default class RepositoryDetail extends Component {
             title:title,
             canGoBack:false,
             isFavorite: this.props.projectModel.isFavorite,
+            theme:this.props.theme,
             favoriteIcon: this.props.projectModel.isFavorite ? require('../../res/img/favi_select.png') : require('../../res/img/favi.png')
         };
         console.log(this.state)
@@ -89,9 +90,7 @@ export default class RepositoryDetail extends Component {
             <View style={styles.container}>
                 <NavigationBar
                     title={this.state.title}
-                    style={{
-                        backgroundColor:'#2196f3'
-                    }}
+                    style={this.state.theme.styles.navBar}
                     leftButton={ViewUtil.getLeftButton(()=>this.onBack())}
                     rightButton={this.renderRightButton()}
                 />

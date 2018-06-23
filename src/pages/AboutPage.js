@@ -19,6 +19,7 @@ export default class AboutPage extends Component {
         this.aboutCommon = new AboutCommon(props,(dic)=>this.updateState(dic),FLAG_ABOUT.flag_about,config)
         this.state={
             projectModels:[],
+            theme:this.props.theme,
         }
     }
 
@@ -64,11 +65,11 @@ export default class AboutPage extends Component {
     render(){
         let content = <View>
             {this.aboutCommon.renderRepository(this.state.projectModels)}
-            {ViewUtil.getSettingItem(()=>{this.onClick(MORE_MENU.WebSite)},require('../../res/img/website.png'),MORE_MENU.WebSite,{tintColor:'#2196f3'},null)}
+            {ViewUtil.getSettingItem(()=>{this.onClick(MORE_MENU.WebSite)},require('../../res/img/website.png'),MORE_MENU.WebSite,this.state.theme.styles.tabBarSelectedIcon,null)}
             <View style={GlobalStyles.line}/>
-            {ViewUtil.getSettingItem(()=>{this.onClick(MORE_MENU.About_Author)},require('../../res/img/author1.png'),MORE_MENU.About_Author,{tintColor:'#2196f3'},null)}
+            {ViewUtil.getSettingItem(()=>{this.onClick(MORE_MENU.About_Author)},require('../../res/img/author1.png'),MORE_MENU.About_Author,this.state.theme.styles.tabBarSelectedIcon,null)}
             <View style={GlobalStyles.line}/>
-            {ViewUtil.getSettingItem(()=>{this.onClick(MORE_MENU.Feedback)},require('../../res/img/feedback.png'),MORE_MENU.Feedback,{tintColor:'#2196f3'},null)}
+            {ViewUtil.getSettingItem(()=>{this.onClick(MORE_MENU.Feedback)},require('../../res/img/feedback.png'),MORE_MENU.Feedback,this.state.theme.styles.tabBarSelectedIcon,null)}
             <View style={GlobalStyles.line}/>
         </View>
         return this.aboutCommon.render(content,{

@@ -118,6 +118,7 @@ export default class AboutCommon {
                         ...this.props
                     })}
                     projectModel={projectModel}
+                    theme={this.props.theme}
                     onFavorite={(item, isFavorite) => ActionUtil.onFavorite(this.favoriteDao,item, isFavorite,FLAG_STORAGE.flag_popular)}
                 />
             )
@@ -186,7 +187,7 @@ export default class AboutCommon {
             <ParallaxScrollView
                 onScroll={onScroll}
                 headerBackgroundColor="#333"
-                backgroundColor="#2196f3"
+                backgroundColor={this.props.theme.themeColor}
                 stickyHeaderHeight={STICKY_HEADER_HEIGHT}
                 parallaxHeaderHeight={PARALLAX_HEADER_HEIGHT}
                 backgroundSpeed={10}

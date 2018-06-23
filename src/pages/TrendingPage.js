@@ -50,6 +50,7 @@ export default class TrendingPage extends Component {
             isVisible: false,
             buttonRect: {},
             timeSpan: timeSpanTextArray[0],
+            theme:this.props.theme
         }
     }
 
@@ -97,9 +98,9 @@ export default class TrendingPage extends Component {
     }
 
     renderModelTitleView() {
-        return <View style={{backgroundColor: '#2196f3'}}>
+        return <View style={{backgroundColor: this.state.theme.themeColor}}>
             <ModalDropdown ref="dropdown_2"
-                           style={styles.dropdown_2}
+                           style={[styles.dropdown_2,{backgroundColor:this.state.theme.themeColor}]}
                            textStyle={styles.dropdown_2_text}
                            dropdownStyle={styles.dropdown_2_dropdown}
                            options={timeSpanTextArray}
@@ -119,8 +120,11 @@ export default class TrendingPage extends Component {
     }
 
     render() {
+        var statusBar={
+            backgroundColor: this.state.theme.styles.navBar.backgroundColor
+        }
         let content = this.state.languages.length > 0 ? <ScrollableTabView
-            tabBarBackgroundColor="#2196f3"
+            tabBarBackgroundColor={this.state.theme.themeColor}
             tabBarInactiveTextColor="mintcream"
             tabBarActiveTextColor="#fff"
             tabBarUnderlineStyle={{backgroundColor: '#efefef', height: 2}}
@@ -136,10 +140,8 @@ export default class TrendingPage extends Component {
         return <View style={styles.container}>
             <NavigationBar
                 titleView={this.renderModelTitleView()}
-                style={{backgroundColor: '#2196f3'}}
-                statusBar={{
-                    backgroundColor: '#2196f3',
-                }}
+                style={this.state.theme.styles.navBar}
+                statusBar={statusBar}
             />
             {content}
         </View>
@@ -155,7 +157,7 @@ class TrendingTab extends Component {
             dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
             isLoading: false,
             favoriteKeys: [],
-
+            theme:this.props.theme
         }
     }
 
@@ -282,6 +284,7 @@ class TrendingTab extends Component {
                 ...this.props
             })}
             projectModel={projectModel}
+            theme={this.props.theme}
             onFavorite={(item, isFavorite) => ActionUtil.onFavorite(favoriteDao,item, isFavorite,FLAG_STORAGE.flag_trending)}
         />
     }
@@ -325,7 +328,6 @@ const styles = StyleSheet.create({
         right: 8,
         borderWidth: 0,
         borderRadius: 3,
-        backgroundColor: '#2196f3',
     },
     dropdown_2_text: {
         marginVertical: 10,

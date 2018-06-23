@@ -21,7 +21,8 @@ export default class CustomKeyPage extends Component {
         this.changeValues = []
         this.isRemoveKey = this.props.isRemoveKey ? true:false;
         this.state = {
-            dataArray: []
+            dataArray: [],
+            theme:this.props.theme,
         }
     }
 
@@ -91,9 +92,9 @@ export default class CustomKeyPage extends Component {
             leftText={leftText}
             isChecked={data.checked}
             checkedImage={
-                <Image style={{tintColor: '#2196f3'}} source={require('../../res/img/check_box.png')}/>}
+                <Image style={this.state.theme.styles.tabBarSelectedIcon} source={require('../../res/img/check_box.png')}/>}
             unCheckedImage={
-                <Image style={{tintColor: '#2196f3'}} source={require('../../res/img/check-box-blank.png')}/>}
+                <Image style={this.state.theme.styles.tabBarSelectedIcon} source={require('../../res/img/check-box-blank.png')}/>}
 
         />)
     }
@@ -147,7 +148,7 @@ export default class CustomKeyPage extends Component {
             <View style={styles.container}>
                 <NavigationBar
                     title={title}
-                    style={{backgroundColor: '#2196f3'}}
+                    style={this.state.theme.styles.navBar}
                     leftButton={ViewUtil.getLeftButton(() => this.onBack())}
                     rightButton={rightButton}
                 />
