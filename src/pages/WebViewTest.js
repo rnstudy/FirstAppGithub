@@ -10,6 +10,7 @@ import {
     DeviceEventEmitter
 } from 'react-native';
 import NavigationBar from './../component/NavigationBar'
+import {ACTION_HOME} from "./HomePage";
 const URL = 'http://www.imooc.com'
 
 export default class WebViewTest extends Component {
@@ -41,7 +42,7 @@ export default class WebViewTest extends Component {
         if(this.state.canGoBack){
                 this.webView.goBack()
         }else{
-            DeviceEventEmitter.emit('showToast','到顶了');
+            DeviceEventEmitter.emit('ACTION_HOME',ACTION_HOME.A_SHOW_TOAST,{text:'到顶了'});
         }
     }
 

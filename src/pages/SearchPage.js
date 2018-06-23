@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 
 import NavigationBar from './../component/NavigationBar'
+import {ACTION_HOME} from "./HomePage";
 import ViewUtil from "../util/ViewUtil";
 import GlobalStyles from '../../res/styles/GlobalStyles'
 import FavoriteDao from '../expand/dao/FavoriteDao'
@@ -34,6 +35,7 @@ export default class SearchPage extends Component {
         this.favoriteDao= new FavoriteDao(FLAG_STORAGE.flag_popular)
         this.favoriteKeys=[];
         this.LanguageDao = new LanguageDao(FLAG_LANGUAGE.flag_key)
+        this.isKeyChange = false;
         this.state = {
             rightButtonText: '搜索',
             isLoading: false,
@@ -48,7 +50,8 @@ export default class SearchPage extends Component {
     saveKey(){
         let key = this.inputKey;
         if(this.checkKeyIsExist(this.keys,key)){
-            DeviceEventEmitter.emit('showToast',key+'已经存在');
+            DeviceEventEmitter.emit('ACTION_HOME',ACTION_HOME.A_SHOW_TOAST,{text:key+'已经存在'});
+
         }else{
             key={
                 "path":key,
@@ -57,7 +60,8 @@ export default class SearchPage extends Component {
             }
             this.keys.unshift(key);
             this.LanguageDao.save(this.keys);
-            DeviceEventEmitter.emit('showToast',key.name+'保存成功');
+            DeviceEventEmitter.emit('ACTION_HOME',ACTION_HOME.A_SHOW_TOAST,{text:key.name+'保存成功'});
+            this.isKeyChange = true;
             this.updateState({
                 showBottomButton:false
             })
@@ -88,6 +92,12 @@ export default class SearchPage extends Component {
 
     componentDidMount(){
         this.initKeys()
+    }
+
+    componentWillUnmount(){
+        if(this.isKeyChange){
+            DeviceEventEmitter.emit('ACTION_HOME',ACTION_HOME.A_RESTART);
+        }
     }
 
     getDataSource(data) {

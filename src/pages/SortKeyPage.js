@@ -97,6 +97,7 @@ export default class SortKeyPage extends Component {
         }
         this.getSortResult();
         this.languageDao.save(this.sortResultArray);
+
         this.props.navigator.pop();
     }
 

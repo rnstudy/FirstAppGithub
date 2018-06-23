@@ -13,6 +13,7 @@ import NavigationBar from './../component/NavigationBar'
 const URL = 'https://wurh.github.io/'
 import GlobalStyles from '../../res/styles/GlobalStyles'
 import ViewUtil from '../util/ViewUtil'
+import {ACTION_HOME} from "./HomePage";
 
 export default class WebPage extends Component {
     constructor(props) {
@@ -37,7 +38,7 @@ export default class WebPage extends Component {
         if(this.state.canGoBack){
             this.webView.goBack()
         }else{
-            DeviceEventEmitter.emit('showToast','到顶了');
+            DeviceEventEmitter.emit('ACTION_HOME',ACTION_HOME.A_SHOW_TOAST,{text:'到顶了'});
             this.props.navigator.pop();
         }
     }

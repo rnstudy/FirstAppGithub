@@ -32,6 +32,7 @@ const API_URL = 'https://github.com/trending/'
 import TimeSpan from '../model/TimeSpan'
 import Popover from '../component/Popover'
 import ModalDropdown from 'react-native-modal-dropdown';
+import {ACTION_HOME} from "./HomePage";
 
 
 var timeSpanTextArray = [
@@ -239,17 +240,18 @@ class TrendingTab extends Component {
                 this.items = result && result.items ? result.items : result ? result : [];
                 this.getFavoriteKeys();
                 if (!this.items || isRefresh && result && result.update_date && !Utils.checkData(result.update_date)) {
-                    DeviceEventEmitter.emit('showToast', '数据过时')
+                    DeviceEventEmitter.emit('ACTION_HOME',ACTION_HOME.A_SHOW_TOAST,{text:'数据过时'});
                     return dataRepository.fetchNetRepository(url);
                 } else {
-                    DeviceEventEmitter.emit('showToast', '显示缓存数据')
+                    DeviceEventEmitter.emit('ACTION_HOME',ACTION_HOME.A_SHOW_TOAST,{text:'显示缓存数据'});
                 }
             })
             .then(items => {
                 this.items = items;
                 if (!items || items.length === 0) return;
                 this.getFavoriteKeys();
-                DeviceEventEmitter.emit('showToast', '显示网络数据')
+                DeviceEventEmitter.emit('ACTION_HOME',ACTION_HOME.A_SHOW_TOAST,{text:'显示网络数据'});
+
             })
             .catch(error => {
                 this.updateState({
