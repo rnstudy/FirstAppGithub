@@ -53,8 +53,6 @@ export default class AboutCommon {
      * @param repositories
      */
     async updateFavorite(repositories) {
-        console.log('1----------1');
-        console.log(repositories);
         if (repositories) {
             this.repositories = repositories
         }

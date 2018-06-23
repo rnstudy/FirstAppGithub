@@ -44,7 +44,7 @@ export default class AboutMePage extends Component {
      * @param isShow
      */
     getClickIcon(isShow) {
-        return isShow ? require('../../res/img/author1.png') : require('../../res/img/person.png')
+        return isShow ? require('../../res/img/down.png') : require('../../res/img/cc-up.png')
     }
 
     onClick(tab) {
@@ -140,25 +140,25 @@ export default class AboutMePage extends Component {
             {/*{this.aboutCommon.renderRepository(this.state.projectModels)}*/}
             {ViewUtil.getSettingItem(() => {
                 this.onClick(FLLAG.BLOG)
-            }, require('../../res/img/website.png'), FLLAG.BLOG.name, {tintColor: '#2196f3'}, this.getClickIcon(this.state.showBlog))}
+            }, require('../../res/img/blog.png'), FLLAG.BLOG.name, {tintColor: '#2196f3'}, this.getClickIcon(this.state.showBlog))}
             <View style={GlobalStyles.line}/>
             {this.state.showBlog ? this.renderItems(FLLAG.BLOG.items) : null}
 
             {ViewUtil.getSettingItem(() => {
                 this.onClick(FLLAG.REPOSITORY)
-            }, require('../../res/img/website.png'), FLLAG.REPOSITORY, {tintColor: '#2196f3'}, this.getClickIcon(this.state.showRepository))}
+            }, require('../../res/img/code.png'), FLLAG.REPOSITORY, {tintColor: '#2196f3'}, this.getClickIcon(this.state.showRepository))}
             <View style={GlobalStyles.line}/>
             {this.state.showRepository ? this.aboutCommon.renderRepository(this.state.projectModels) : null}
 
             {ViewUtil.getSettingItem(() => {
                 this.onClick(FLLAG.QQ)
-            }, require('../../res/img/website.png'), FLLAG.QQ.name, {tintColor: '#2196f3'}, this.getClickIcon(this.state.showQQ))}
+            }, require('../../res/img/group.png'), FLLAG.QQ.name, {tintColor: '#2196f3'}, this.getClickIcon(this.state.showQQ))}
             <View style={GlobalStyles.line}/>
             {this.state.showQQ ? this.renderItems(FLLAG.QQ.items, true) : null}
 
             {ViewUtil.getSettingItem(() => {
                 this.onClick(FLLAG.CONTACT)
-            }, require('../../res/img/website.png'), FLLAG.CONTACT.name, {tintColor: '#2196f3'}, this.getClickIcon(this.state.showContact))}
+            }, require('../../res/img/contact.png'), FLLAG.CONTACT.name, {tintColor: '#2196f3'}, this.getClickIcon(this.state.showContact))}
             <View style={GlobalStyles.line}/>
             {this.state.showContact ? this.renderItems(FLLAG.CONTACT.items, true) : null}
 
