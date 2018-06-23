@@ -1,11 +1,8 @@
 import React, {Component} from 'react';
 import {
-    Platform,
     StyleSheet,
     Image,
-    Text,
     View,
-    TextInput,
     ListView,
     RefreshControl,
     DeviceEventEmitter,
@@ -17,11 +14,9 @@ import NavigationBar from './../component/NavigationBar'
 import DataRepository, {FLAG_STORAGE} from './../expand/dao/DataRepository'
 import RepositoryCell from './../component/RepositoryCell'
 import LanguageDao, {FLAG_LANGUAGE} from '../expand/dao/LanguageDao'
-import RepositoryDetail from './RepositoryDetail'
 import ProjectModel from '../model/ProjectModel'
 import FavoriteDao from '../expand/dao/FavoriteDao'
 import Utils from '../util/Utils'
-import ArrayUtil from "../util/ArrayUtil";
 import ActionUtil from "../util/ActionUtil";
 import SearchPage from './SearchPage'
 
