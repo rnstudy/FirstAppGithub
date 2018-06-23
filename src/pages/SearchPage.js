@@ -23,6 +23,7 @@ import Utils from "../util/Utils";
 import RepositoryCell from './../component/RepositoryCell'
 import ProjectModel from "../model/ProjectModel";
 import ActionUtil from "../util/ActionUtil";
+import makeCancelable from "../util/Cancelable"
 import LanguageDao,{FLAG_LANGUAGE} from '../expand/dao/LanguageDao'
 
 const API_URL = 'https://api.github.com/search/repositories?q='
@@ -98,6 +99,7 @@ export default class SearchPage extends Component {
         if(this.isKeyChange){
             DeviceEventEmitter.emit('ACTION_HOME',ACTION_HOME.A_RESTART);
         }
+        this.cancelable &&  this.cancelable.cancel();
     }
 
     getDataSource(data) {
@@ -146,7 +148,9 @@ export default class SearchPage extends Component {
         this.updateState({
             isLoading: true,
         })
-        fetch(this.genFetchUrl(this.inputKey))
+        this.cancelable = makeCancelable(fetch(this.genFetchUrl(this.inputKey)))
+        console.log(this.cancelable)
+        this.cancelable.promise
             .then(response => response.json())
             .then(responseData => {
                 if (!this || !responseData || responseData.items && responseData.items.length === 0) {
@@ -194,6 +198,7 @@ export default class SearchPage extends Component {
                 rightButtonText: '搜索',
                 isLoading:false
             })
+            this.cancelable.cancel();
         }
     }
 
