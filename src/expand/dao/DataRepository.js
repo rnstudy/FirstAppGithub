@@ -4,7 +4,7 @@ import {
 
 import GitHubTrending from 'GitHubTrending'
 
-export var FLAG_STORAGE = {flag_popular: 'popular', flag_trending: 'trending'}
+export var FLAG_STORAGE = {flag_popular: 'popular', flag_trending: 'trending',flag_my:'my'}
 export default class DataRepository {
 
     constructor(flag) {
@@ -22,9 +22,17 @@ export default class DataRepository {
      */
     saveRepository(url, items, callback) {
         if (!url || !items) return;
-        let wrapData = {
-            items: items,
-            update_date: new Date().getTime()
+        let wrapData;
+        if(this.flag===FLAG_STORAGE.flag_my){
+            wrapData={
+                item:items,
+                update_date: new Date().getTime()
+            }
+        }else{
+            wrapData = {
+                items: items,
+                update_date: new Date().getTime()
+            }
         }
         AsyncStorage.setItem(url, JSON.stringify(wrapData), callback);
     }
@@ -91,7 +99,27 @@ export default class DataRepository {
      */
     fetchNetRepository(url) {
         return new Promise((resolve, reject) => {
-            if(this.flag === FLAG_STORAGE.flag_trending){
+            if(this.flag !== FLAG_STORAGE.flag_trending){
+                fetch(url)
+                    .then(response => response.json())
+                    .catch((error)=>{
+                        reject(error);
+                    })
+                    .then(responseData => {
+                        if(this.flag === FLAG_STORAGE.flag_my && responseData){
+                            this.saveRepository(url,responseData);
+                            resolve(responseData);
+                        }else if(responseData && responseData.items){
+                            this.saveRepository(url, responseData.items);
+                            resolve(responseData);
+                        }else{
+                            reject(new Error('responseData is null!'));
+                        }
+                    })
+                    .catch(error => {
+                        reject(error)
+                    })
+            }else{
                 this.trending.fetchTrending(url)
                     .then(result=>{
                         if(!result){
@@ -101,23 +129,7 @@ export default class DataRepository {
                         this.saveRepository(url,result);
                         resolve(result);
                     })
-            }else{
-                fetch(url)
-                    .then(response => response.json())
-                    .then(result => {
-                        if (!result) {
-                            reject(new Error('responsedData is null'));
-                            return;
-                        }
-                        resolve(result.items);
-                        this.saveRepository(url, result.items);
-                    })
-                    .then(error => {
-                        reject(error)
-                    })
-                    .done();
             }
-
         })
     }
 

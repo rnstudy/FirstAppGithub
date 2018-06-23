@@ -11,15 +11,125 @@ import {
 
 import ViewUtil from '../util/ViewUtil'
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
+import FavoriteDao from '../expand/dao/FavoriteDao'
+import {FLAG_STORAGE} from "../expand/dao/DataRepository";
+import ProjectModel from "../model/ProjectModel";
+import Utils from "../util/Utils";
+import RepositoryCell from "../component/RepositoryCell";
+import RepositoryDetail from "./RepositoryDetail";
+import RepositoryUtils from "../expand/dao/RepositoryUtils";
 
-export var FLAG_ABOUT={flag_about:'about',flag_about_me:'about_me'}
+export var FLAG_ABOUT = {flag_about: 'about', flag_about_me: 'about_me'}
 
 export default class AboutCommon {
-    constructor(props,updateState,flag_about) {
-        this.props=props;
-        this.updateState=updateState;
-        this.flag_about=flag_about;
+    constructor(props, updateState, flag_about,config) {
+        this.props = props;
+        this.updateState = updateState;
+        this.flag_about = flag_about;
+        this.config = config;
+        this.repositories = [];
+        this.favoriteKeys = null;
+        this.favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_my)
+        this.repositoryUtils = new RepositoryUtils(this);
+    }
+    componentDidMount(){
+        if(this.flag_about === FLAG_ABOUT.flag_about){
+            this.repositoryUtils.fetchRepository(this.config.info.currentRepoUrl);
+        }else{
+            var urls = [];
+            var items = this.config.items;
+            for(var i = 0; i<items.length;i++){
+                urls.push(this.config.info.url+items[i]);
+            }
+            this.repositoryUtils.fetchRepositorys(urls);
+        }
+    }
 
+
+    /**
+     * 更新项目的用户收藏状态
+     * @param repositories
+     */
+    async updateFavorite(repositories) {
+        if (repositories) {
+            this.repositories = repositories
+        }
+        if (!this.repositories) return;
+        if (!this.favoriteKeys) {
+            this.favoriteKeys = await this.favoriteDao.getFavoriteKeys();
+        }
+        let projectModels = [];
+        let items = this.repositories;
+        for (let i = 0; i < this.repositories.length; i++) {
+            var data = this.repositories[i];
+            data = data.item ? data.item:data;
+            projectModels.push({
+                isFavorite:Utils.checkFavorite(data,this.favoriteKeys?this.favoriteKeys:[]),
+                item:data
+            })
+        }
+        this.updateState({
+            projectModels:projectModels
+        })
+    }
+
+    /**
+     * 通知数据发生改变
+     * @param items 改变时候的数据
+     */
+    onNotifyDataChanged(items) {
+        this.updateFavorite(items)
+    }
+
+
+    onSelect(projectModel) {
+        let title = projectModel.item.full_name ? projectModel.item.full_name : projectModel.item.fullName
+        this.props.navigator.push({
+            component: RepositoryDetail,
+            params: {
+                favoriteDao: this.favoriteDao,
+                projectModel: projectModel,
+                title: title,
+                flag: FLAG_STORAGE.flag_popular,
+                ...this.props
+            }
+        })
+    }
+
+    /**
+     * favoiteIcon的单击回调函数
+     * @param item
+     * @param isFavorite
+     */
+    onFavorite(item, isFavorite) {
+        if (isFavorite) {
+            this.favoriteDao.saveFavoriteItem(item.id.toString(), JSON.stringify(item));
+        } else {
+            this.favoriteDao.removeFavoriteItem(item.id.toString())
+        }
+    }
+
+    /**
+     * 渲染内容
+     * @param projectModels
+     */
+    renderRepository(projectModels){
+        //console.log('about page models')
+        //console.log(projectModels)
+        if(!projectModels || projectModels.length ===0) return null;
+        let views = [];
+        for(let i = 0, l=projectModels.length;i<l;i++){
+            let projectModel = projectModels[i];
+            views.push(
+                <RepositoryCell
+                    key={projectModel.item.id.toString()}
+                    onSelect={() => this.onSelect(projectModel)}
+                    projectModel={projectModel}
+                    onFavorite={(item, isFavorite) => this.onFavorite(item, isFavorite)}
+                />
+            )
+        }
+        return views
     }
 
     getParallaxRenderConfig(params) {
@@ -65,7 +175,7 @@ export default class AboutCommon {
 
         config.renderFixedHeader = () => (
             <View key="fixed-header" style={styles.fixedSection}>
-                {ViewUtil.getLeftButton(()=>{
+                {ViewUtil.getLeftButton(() => {
                     this.props.navigator.pop()
                 })}
             </View>
@@ -73,7 +183,7 @@ export default class AboutCommon {
         return config;
     }
 
-    render(contentView,params) {
+    render(contentView, params) {
         let renderConfig = this.getParallaxRenderConfig(params);
         const {
             onScroll = () => {
@@ -118,8 +228,8 @@ const styles = StyleSheet.create({
     stickySection: {
         height: STICKY_HEADER_HEIGHT,
         justifyContent: 'center',
-        alignItems:'center',
-        paddingTop:(Platform.OS==='ios')?20:0,
+        alignItems: 'center',
+        paddingTop: (Platform.OS === 'ios') ? 20 : 0,
     },
     stickySectionText: {
         color: 'white',
@@ -129,13 +239,13 @@ const styles = StyleSheet.create({
     fixedSection: {
         position: 'absolute',
         bottom: 0,
-        left:0,
-        top:0,
-        paddingRight:8,
-        flexDirection:'row',
-        alignItems:'center',
-        paddingTop:(Platform.OS==='ios')?20:0,
-        justifyContent:"space-between"
+        left: 0,
+        top: 0,
+        paddingRight: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingTop: (Platform.OS === 'ios') ? 20 : 0,
+        justifyContent: "space-between"
 
     },
     fixedSectionText: {

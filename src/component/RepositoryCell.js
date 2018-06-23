@@ -69,9 +69,6 @@ export default class RepositoryCell extends Component {
 
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1
-    },
     title: {
         fontSize: 16,
         marginBottom: 2,

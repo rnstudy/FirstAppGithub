@@ -9,16 +9,24 @@ import ViewUtil from '../util/ViewUtil'
 import {MORE_MENU} from "../component/MoreMenu";
 import AboutCommon,{FLAG_ABOUT} from'./AboutCommon'
 import WebPage from "./WebPage";
+import config from '../../res/data/config'
 
 
 export default class AboutPage extends Component {
     constructor(props) {
         super(props);
-        this.aboutCommon = new AboutCommon(props,(dic)=>this.updateState(dic),FLAG_ABOUT.flag_about)
+        this.aboutCommon = new AboutCommon(props,(dic)=>this.updateState(dic),FLAG_ABOUT.flag_about,config)
+        this.state={
+            projectModels:[],
+        }
     }
 
     updateState(dic){
         this.setState(dic)
+    }
+
+    componentDidMount(){
+        this.aboutCommon.componentDidMount();
     }
 
     onClick(tab){
@@ -53,6 +61,7 @@ export default class AboutPage extends Component {
 
     render(){
         let content = <View>
+            {this.aboutCommon.renderRepository(this.state.projectModels)}
             {ViewUtil.getSettingItem(()=>{this.onClick(MORE_MENU.WebSite)},require('../../res/img/website.png'),MORE_MENU.WebSite,{tintColor:'#2196f3'},null)}
             <View style={GlobalStyles.line}/>
             {ViewUtil.getSettingItem(()=>{this.onClick(MORE_MENU.About_Author)},require('../../res/img/author1.png'),MORE_MENU.About_Author,{tintColor:'#2196f3'},null)}

@@ -1,0 +1,20 @@
+{
+  "items":[
+    "RNStudyNotes",
+    "react-native-awesome",
+  ],
+  "info":{
+    "html_url":"https://github.com/crazycodeboy/",
+    "url":"https://api.github.com/repos/crazycodeboy",
+    "currentRepoUrl":"https://api.github.com/repos/crazycodeboy/GithubPopular"
+  },
+  "author":{
+    "name":"CrazyCodeBoy",
+    "description":"Hello world!",
+    "avatar":"https://avatars2.githubusercontent.com/u/5243522?s=460&v=4",
+    "backgroundImg":"https://d.vpimg1.com/upcb/2018/06/13/128/ias_152886876714855_570x273_90.jpg",
+    "avatar1":"https://avatars2.githubusercontent.com/u/5243522?s=460&v=4",
+    "backgroundImg1":"https://d.vpimg1.com/upcb/2018/06/13/128/ias_152886876714855_570x273_90.jpg",
+    "url":"https://wurh.github.io"
+  }
+}

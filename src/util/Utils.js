@@ -16,4 +16,19 @@ export default class Utils {
         }
         return false;
     }
+
+    /**
+     * 检查项目更新时间
+     * @param longTime  项目更新时间
+     * @returns {boolean} true 不需要更新，false需要更新
+     */
+    static checkData(longTime) {  //保存5天
+        let cDate = new Date();
+        let tDate = new Date();
+        tDate.setTime(longTime);
+        if (cDate.getMonth() !== tDate.getMonth()) return false;
+        if (cDate.getDay() !== tDate.getDay()) return false;
+        if (cDate.getHours() - tDate.getHours() > 4) return false;
+        return true;
+    }
 }
