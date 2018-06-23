@@ -52,6 +52,8 @@ export default class AboutCommon {
      * @param repositories
      */
     async updateFavorite(repositories) {
+        console.log('1----------1');
+        console.log(repositories);
         if (repositories) {
             this.repositories = repositories
         }
@@ -69,8 +71,7 @@ export default class AboutCommon {
                 item:data
             })
         }
-        console.log('1----------1');
-        console.log(projectModels);
+
         this.updateState({
             projectModels:projectModels
         })

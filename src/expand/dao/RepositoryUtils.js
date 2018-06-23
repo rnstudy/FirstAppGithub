@@ -30,6 +30,8 @@ export default class RepositoryUtils {
      * @param url
      */
     fetchRepository(url){
+        console.log('请求工具：');
+        console.log(url);
         this.dataRepository.fetchRepository(url)
             .then(result=>{
                 if(result){
