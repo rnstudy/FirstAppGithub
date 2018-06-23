@@ -18,6 +18,7 @@ import Utils from "../util/Utils";
 import RepositoryCell from "../component/RepositoryCell";
 import RepositoryDetail from "./RepositoryDetail";
 import RepositoryUtils from "../expand/dao/RepositoryUtils";
+import ActionUtil from "../util/ActionUtil";
 
 
 export var FLAG_ABOUT = {flag_about: 'about', flag_about_me: 'about_me'}
@@ -85,21 +86,6 @@ export default class AboutCommon {
         this.updateFavorite(items)
     }
 
-
-    onSelect(projectModel) {
-        let title = projectModel.item.full_name ? projectModel.item.full_name : projectModel.item.fullName
-        this.props.navigator.push({
-            component: RepositoryDetail,
-            params: {
-                favoriteDao: this.favoriteDao,
-                projectModel: projectModel,
-                title: title,
-                flag: FLAG_STORAGE.flag_popular,
-                ...this.props
-            }
-        })
-    }
-
     /**
      * favoiteIcon的单击回调函数
      * @param item
@@ -126,7 +112,13 @@ export default class AboutCommon {
             views.push(
                 <RepositoryCell
                     key={keyId}
-                    onSelect={() => this.onSelect(projectModel)}
+                    onSelect={()=>ActionUtil.onSelectRepository({
+                        favoriteDao: this.favoriteDao,
+                        projectModel: projectModel,
+                        title: projectModel.item.full_name ? projectModel.item.full_name : projectModel.item.fullName,
+                        flag: FLAG_STORAGE.flag_popular,
+                        ...this.props
+                    })}
                     projectModel={projectModel}
                     onFavorite={(item, isFavorite) => this.onFavorite(item, isFavorite)}
                 />

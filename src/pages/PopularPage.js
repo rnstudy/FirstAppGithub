@@ -20,6 +20,8 @@ import RepositoryDetail from './RepositoryDetail'
 import ProjectModel from '../model/ProjectModel'
 import FavoriteDao from '../expand/dao/FavoriteDao'
 import Utils from '../util/Utils'
+import ArrayUtil from "../util/ArrayUtil";
+import ActionUtil from "../util/ActionUtil";
 
 const URL = 'https://api.github.com/search/repositories?q='
 const QUERY_STR = '&sort=stars'
@@ -177,20 +179,6 @@ class PopularTab extends Component {
             })
     }
 
-    onSelect(projectModel) {
-        let title = projectModel.item.full_name ? projectModel.item.full_name : projectModel.item.fullName
-        this.props.navigator.push({
-            component: RepositoryDetail,
-            params: {
-                favoriteDao: favoriteDao,
-                projectModel: projectModel,
-                title: title,
-                flag: FLAG_STORAGE.flag_popular,
-                ...this.props
-            }
-        })
-    }
-
     /**
      * favoiteIcon的单击回调函数
      * @param item
@@ -207,7 +195,13 @@ class PopularTab extends Component {
     renderRow(projectModel) {
         return <RepositoryCell
             key={projectModel.item.id.toString()}
-            onSelect={() => this.onSelect(projectModel)}
+            onSelect={()=> ActionUtil.onSelectRepository({
+                favoriteDao: favoriteDao,
+                projectModel: projectModel,
+                title: projectModel.item.full_name ? projectModel.item.full_name : projectModel.item.fullName,
+                flag: FLAG_STORAGE.flag_popular,
+                ...this.props
+            })}
             projectModel={projectModel}
             onFavorite={(item, isFavorite) => this.onFavorite(item, isFavorite)}
 

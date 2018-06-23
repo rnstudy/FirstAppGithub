@@ -263,20 +263,6 @@ class TrendingTab extends Component {
         this.setState(dic)
     }
 
-    onSelectRepository(projectModel) {
-        let title = projectModel.item.full_name ? projectModel.item.full_name : projectModel.item.fullName
-        this.props.navigator.push({
-            component: RepositoryDetail,
-            params: {
-                favoriteDao: favoriteDao,
-                projectModel: projectModel,
-                title: title,
-                flag: FLAG_STORAGE.flag_trending,
-                ...this.props
-            }
-        })
-    }
-
     /**
      * favoiteIcon的单击回调函数
      * @param item
@@ -300,7 +286,13 @@ class TrendingTab extends Component {
         console.log(projectModel)
         return <TrendingCell
             key={projectModel.item.fullName}
-            onSelect={() => this.onSelectRepository(projectModel)}
+            onSelect={()=>ActionUtil.onSelectRepository({
+                favoriteDao: favoriteDao,
+                projectModel: projectModel,
+                title: projectModel.item.full_name ? projectModel.item.full_name : projectModel.item.fullName,
+                flag: FLAG_STORAGE.flag_trending,
+                ...this.props
+            })}
             projectModel={projectModel}
             onFavorite={(item, isFavorite) => this.onFavorite(item, isFavorite)}
         />
