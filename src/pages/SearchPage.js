@@ -25,12 +25,13 @@ import ProjectModel from "../model/ProjectModel";
 import ActionUtil from "../util/ActionUtil";
 import makeCancelable from "../util/Cancelable"
 import LanguageDao,{FLAG_LANGUAGE} from '../expand/dao/LanguageDao'
+import BaseComponent from "./BaseComponent";
 
 const API_URL = 'https://api.github.com/search/repositories?q='
 const QUERY_STR = '&sort=stars'
 
 
-export default class SearchPage extends Component {
+export default class SearchPage extends BaseComponent {
     constructor(props) {
         super(props);
         this.favoriteDao= new FavoriteDao(FLAG_STORAGE.flag_popular)
@@ -92,10 +93,12 @@ export default class SearchPage extends Component {
     }
 
     componentDidMount(){
+        super.componentDidMount()
         this.initKeys()
     }
 
     componentWillUnmount(){
+        super.componentWillUnmount()
         if(this.isKeyChange){
             DeviceEventEmitter.emit('ACTION_HOME',ACTION_HOME.A_RESTART);
         }

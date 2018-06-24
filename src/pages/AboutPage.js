@@ -11,9 +11,10 @@ import AboutCommon,{FLAG_ABOUT} from'./AboutCommon'
 import WebPage from "./WebPage";
 import AboutMePage from "./AboutMePage"
 import config from '../../res/data/config'
+import BaseComponent from "./BaseComponent";
 
 
-export default class AboutPage extends Component {
+export default class AboutPage extends BaseComponent {
     constructor(props) {
         super(props);
         this.aboutCommon = new AboutCommon(props,(dic)=>this.updateState(dic),FLAG_ABOUT.flag_about,config)
@@ -28,6 +29,7 @@ export default class AboutPage extends Component {
     }
 
     componentDidMount(){
+        super.componentDidMount()
         this.aboutCommon.componentDidMount();
     }
 

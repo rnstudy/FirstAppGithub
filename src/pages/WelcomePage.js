@@ -10,12 +10,14 @@ import {
 import NavigationBar from './../component/NavigationBar'
 import HomePage from './HomePage'
 import ThemeDao from '../expand/dao/ThemeDao'
-export default class WelcomePage extends Component{
+import BaseComponent from "./BaseComponent";
+export default class WelcomePage extends BaseComponent{
 	constructor(props){
 		super(props)
 	}
 
 	componentDidMount(){
+		super.componentDidMount()
 		new ThemeDao().getTheme().then((data)=>{
 			this.theme = data;
 		})
@@ -29,6 +31,7 @@ export default class WelcomePage extends Component{
 		},500)
 	}
 	componentWillUnmount(){
+		super.componentWillUnmount()
 		this.timer && clearTimeout(this.timer )
 	}
 	render(){

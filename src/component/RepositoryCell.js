@@ -6,8 +6,9 @@ import {
     View,
     TouchableOpacity,
 } from 'react-native';
+import BaseComponent from "../pages/BaseComponent";
 
-export default class RepositoryCell extends Component {
+export default class RepositoryCell extends BaseComponent {
     constructor(props) {
         super(props);
         //console.log('projectModel')

@@ -20,9 +20,10 @@ import ViewUtil from'../util/ViewUtil'
 import AboutPage from'./AboutPage'
 import AboutMePage  from'./AboutMePage'
 import CustomTheme from './CustomTheme'
+import BaseComponent from "./BaseComponent";
 
 
-export default class MyPage extends Component {
+export default class MyPage extends BaseComponent {
     constructor(props) {
         super(props);
         this.state = {

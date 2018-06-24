@@ -8,7 +8,8 @@ import {
     ScrollView,
     TouchableHighlight,
     ListView,
-    Modal
+    Modal,
+    DeviceEventEmitter
 } from 'react-native';
 import NavigationBar from './../component/NavigationBar'
 import CustomKeyPage from './CustomKeyPage'
@@ -22,8 +23,10 @@ import AboutPage from'./AboutPage'
 import AboutMePage  from'./AboutMePage'
 import ThemeFactory,{ThemeFlags} from '../../res/styles/ThemeFactory'
 import ThemeDao from '../expand/dao/ThemeDao'
+import {ACTION_HOME} from "./HomePage";
+import BaseComponent from "./BaseComponent";
 
-export default class CustomTheme extends Component {
+export default class CustomTheme extends BaseComponent {
 
     constructor(props) {
         super(props);
@@ -39,6 +42,9 @@ export default class CustomTheme extends Component {
     onSelectTheme(themeKey){
         this.themeDao.save(ThemeFlags[themeKey])
         this.props.onClose();
+        DeviceEventEmitter.emit('ACTION_BASE',ACTION_HOME.A_THEME,ThemeFactory.createTheme(
+            ThemeFlags[themeKey]
+        ))
     }
 
     /**

@@ -19,11 +19,12 @@ import FavoriteDao from '../expand/dao/FavoriteDao'
 import Utils from '../util/Utils'
 import ActionUtil from "../util/ActionUtil";
 import SearchPage from './SearchPage'
+import BaseComponent from "./BaseComponent";
 
 const URL = 'https://api.github.com/search/repositories?q='
 const QUERY_STR = '&sort=stars'
 var favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_popular);
-export default class PopularPage extends Component {
+export default class PopularPage extends BaseComponent {
     constructor(props) {
         super(props);
         this.languageDao = new LanguageDao(FLAG_LANGUAGE.flag_key);
@@ -34,6 +35,7 @@ export default class PopularPage extends Component {
     }
 
     componentDidMount() {
+        super.componentDidMount()
         this.load()
     }
 
@@ -132,6 +134,11 @@ class PopularTab extends Component {
         if (this.isFavoriteChange) {
             this.isFavoriteChange = false;
             this.getFavoriteKeys();
+        }else if(nextProps.theme !== this.state.theme){
+            this.updateState({
+                theme:nextProps.theme
+            })
+            this.flushFavoriteState();
         }
     }
 

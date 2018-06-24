@@ -14,9 +14,10 @@ import config from '../../res/data/config'
 import FLLAG from '../../res/data/merepo'
 import Toast, {DURATION} from 'react-native-easy-toast'
 import WebPage from "./WebPage";
+import BaseComponent from "./BaseComponent";
 
 
-export default class AboutMePage extends Component {
+export default class AboutMePage extends BaseComponent {
     constructor(props) {
         super(props);
         this.aboutCommon = new AboutCommon(props, (dic) => this.updateState(dic), FLAG_ABOUT.flag_about_me, config)
@@ -36,6 +37,7 @@ export default class AboutMePage extends Component {
     }
 
     componentDidMount() {
+        super.componentDidMount()
         this.aboutCommon.componentDidMount();
     }
 

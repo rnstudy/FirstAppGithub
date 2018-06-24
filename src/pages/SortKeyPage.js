@@ -14,9 +14,10 @@ import ArrayUtil from '../util/ArrayUtil'
 import SortableListView from 'react-native-sortable-listview'
 import ViewUtil from'../util/ViewUtil'
 import { YellowBox } from 'react-native';
+import BaseComponent from "./BaseComponent";
 YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated', 'Module RCTImageLoader']);
 
-class SortCell extends Component {
+class SortCell extends BaseComponent {
     render() {
         return (
             <TouchableHighlight
@@ -47,6 +48,7 @@ export default class SortKeyPage extends Component {
     }
 
     componentDidMount() {
+        super.componentDidMount()
         this.languageDao = new LanguageDao(this.props.flag)
         this.loadData();
     }

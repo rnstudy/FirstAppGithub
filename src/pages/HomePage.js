@@ -19,14 +19,17 @@ import WebViewTest from './WebViewTest'
 import TrendingPage from './TrendingPage'
 import FavoritePage from './FavoritePage'
 
-export const ACTION_HOME={A_SHOW_TOAST:'showToast',A_RESTART:'restart'};
+export const ACTION_HOME={A_SHOW_TOAST:'showToast',A_RESTART:'restart',A_THEME:'theme'};
 export const FLAG_TAB={
     flag_popularTab:'tb_popular',
     flag_trendingTab:'tb_trending',
     flag_favoriteTab:'tb_favorite',
     flag_my:'tb_my',
 }
-export default class HomePage extends Component {
+
+import BaseComponent from './BaseComponent'
+
+export default class HomePage extends BaseComponent {
     constructor(props) {
         super(props);
         let selectedTab = this.props.selectedTab ? this.props.selectedTab: 'tb_popular'
@@ -64,14 +67,15 @@ export default class HomePage extends Component {
     }
 
     componentDidMount(){
+        super.componentDidMount();
         this.listener = DeviceEventEmitter.addListener('ACTION_HOME',(action,params)=>{
             this.onAction(action,params)
-            //this.toast.show(text,DURATION.LENGTH_SHORT);
         });
 
     }
 
     componentWillUnmount(){
+        super.componentWillUnmount();
         this.listener && this.listener.remove();
     }
 
@@ -84,7 +88,7 @@ export default class HomePage extends Component {
             renderSelectedIcon={() => <Image style={[styles.imgae, this.state.theme.styles.tabBarSelectedIcon]}
                                              source={icon}/>}
             onPress={() => this.setState({selectedTab: selectTab})}>
-            <Component {...this.props}/>
+            <Component {...this.props} theme={this.state.theme}/>
         </TabNavigator.Item>
     }
     render() {

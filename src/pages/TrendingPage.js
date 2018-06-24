@@ -33,6 +33,7 @@ import TimeSpan from '../model/TimeSpan'
 import Popover from '../component/Popover'
 import ModalDropdown from 'react-native-modal-dropdown';
 import {ACTION_HOME} from "./HomePage";
+import BaseComponent from "./BaseComponent";
 
 
 var timeSpanTextArray = [
@@ -41,7 +42,7 @@ var timeSpanTextArray = [
     new TimeSpan('本月', 'since=monthly')
 ];
 
-export default class TrendingPage extends Component {
+export default class TrendingPage extends BaseComponent {
     constructor(props) {
         super(props);
         this.languageDao = new LanguageDao(FLAG_LANGUAGE.flag_language);
@@ -55,6 +56,7 @@ export default class TrendingPage extends Component {
     }
 
     componentDidMount() {
+        super.componentDidMount()
         this.load()
     }
 
@@ -148,7 +150,7 @@ export default class TrendingPage extends Component {
     }
 }
 
-class TrendingTab extends Component {
+class TrendingTab extends BaseComponent {
     constructor(props) {
         super(props)
         this.isFavoriteChange = false;
@@ -162,6 +164,7 @@ class TrendingTab extends Component {
     }
 
     componentDidMount() {
+        super.componentDidMount()
         this.loadData(this.props.timeSpan, true)
         this.listener = DeviceEventEmitter.addListener('favoriteChange_trending', () => {
             this.isFavoriteChange = true;
@@ -169,6 +172,7 @@ class TrendingTab extends Component {
     }
 
     componentWillUnmount() {
+        super.componentWillUnmount()
         if (this.listener) {
             this.listener.remove();
         }
@@ -182,6 +186,11 @@ class TrendingTab extends Component {
             this.isFavoriteChange = false;
             this.loadData(this.props.timeSpan, true);
           //  this.getFavoriteKeys();
+        }else if(nextProps.theme !== this.state.theme){
+            this.updateState({
+                theme:nextProps.theme
+            })
+            this.loadData(this.props.timeSpan, true);
         }
     }
 

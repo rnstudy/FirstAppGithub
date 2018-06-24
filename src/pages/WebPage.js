@@ -14,8 +14,9 @@ const URL = 'https://wurh.github.io/'
 import GlobalStyles from '../../res/styles/GlobalStyles'
 import ViewUtil from '../util/ViewUtil'
 import {ACTION_HOME} from "./HomePage";
+import BaseComponent from "./BaseComponent";
 
-export default class WebPage extends Component {
+export default class WebPage extends BaseComponent {
     constructor(props) {
         super(props);
         this.state = {

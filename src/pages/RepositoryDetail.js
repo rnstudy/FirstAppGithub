@@ -12,9 +12,10 @@ import {
 import ViewUtil from '../util/ViewUtil'
 import NavigationBar from './../component/NavigationBar'
 import FavoriteDao from'../expand/dao/FavoriteDao'
+import BaseComponent from "./BaseComponent";
 
 const TRENDING_URL = 'http://github.com/'
-export default class RepositoryDetail extends Component {
+export default class RepositoryDetail extends BaseComponent {
     constructor(props) {
         super(props);
         this.url= this.props.projectModel.item.html_url ? this.props.projectModel.item.html_url : TRENDING_URL+this.props.projectModel.item.fullName;

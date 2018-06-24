@@ -8,8 +8,9 @@ import {
 } from 'react-native';
 
 import HtmlView from 'react-native-htmlview';
+import BaseComponent from "../pages/BaseComponent";
 
-export default class TrendingCell extends Component {
+export default class TrendingCell extends BaseComponent {
     constructor(props) {
         super(props);
         this.state = {

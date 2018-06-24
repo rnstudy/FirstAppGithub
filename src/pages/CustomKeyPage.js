@@ -13,8 +13,9 @@ import ViewUtil from '../util/ViewUtil'
 import LanguageDao, {FLAG_LANGUAGE} from '../expand/dao/LanguageDao'
 import Checkbox from 'react-native-check-box'
 import ArrayUtil from '../util/ArrayUtil'
+import BaseComponent from "./BaseComponent";
 
-export default class CustomKeyPage extends Component {
+export default class CustomKeyPage extends BaseComponent {
     constructor(props) {
         super(props);
         this.languageDao = new LanguageDao(this.props.flag)
@@ -27,6 +28,7 @@ export default class CustomKeyPage extends Component {
     }
 
     componentDidMount() {
+        super.componentDidMount()
         this.loadData();
     }
 
